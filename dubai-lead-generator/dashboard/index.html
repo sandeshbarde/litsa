@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Global B2B Lead Engine | CEO & Loophole Acquisition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        mono: ['"JetBrains Mono"', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#312e81',
+                        },
+                        dark: {
+                            bg: '#090d16',
+                            card: '#111827',
+                            border: '#1f293d',
+                            hover: '#1a2337'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f3f4f6;
+        }
+        .glow-brand {
+            box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.35);
+        }
+        .glow-red {
+            box-shadow: 0 0 15px -3px rgba(239, 68, 68, 0.25);
+        }
+        .cursor-blink {
+            display: inline-block;
+            width: 7px;
+            height: 15px;
+            background-color: #818cf8;
+            margin-left: 3px;
+            vertical-align: middle;
+            animation: blink 0.9s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        /* Custom scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0d1322;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #27354f;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4f46e5;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
+
+    <!-- Top Announcement / Filter Bar -->
+    <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-900/40 px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
+        <div class="flex items-center gap-2">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> STRICT NO-WEBSITE FILTER ACTIVE
+            </span>
+            <span class="text-slate-400">100% of discovered businesses have NO active website. Prime targets for custom personal website design.</span>
+        </div>
+        <div class="flex items-center gap-3">
+            <button onclick="purgeWebsites()" class="text-rose-400 hover:text-rose-300 font-medium transition-colors flex items-center gap-1">
+                <span>🧹 Purge Any Existing Websites</span>
+            </button>
+            <span class="text-slate-600">|</span>
+            <button onclick="openModal('modal-api-keys')" class="text-indigo-300 hover:text-white font-medium transition-colors flex items-center gap-1">
+                <span>🔑 API Setup & Recommendations</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Navigation -->
+    <nav class="bg-dark-card/90 backdrop-blur-md border-b border-dark-border sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center font-bold text-white shadow-lg glow-brand text-lg">
+                        ⚡
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-base tracking-tight text-white">GLOBAL B2B <span class="text-indigo-400">LEAD ENGINE</span></span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">CEO Target</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Company Research • Loophole Analysis • Auto-Typer Pitch</p>
+                    </div>
+                </div>
+
+                <!-- Global & All-India City Switcher -->
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center bg-dark-bg border border-indigo-500/40 rounded-lg px-2.5 py-1.5 focus-within:border-indigo-400">
+                        <span class="text-slate-400 text-xs mr-2">📍 Target City:</span>
+                        <input list="city-suggestions" id="global-city-input" value="Dubai" onchange="onCityInputChange(this.value)" placeholder="Type any city (e.g. Pune, Mumbai, Delhi)..." class="bg-transparent text-xs font-bold text-white w-44 sm:w-52 focus:outline-none placeholder-slate-500">
+                        <datalist id="city-suggestions">
+                            <option value="Dubai">🇦🇪 Dubai, UAE</option>
+                            <option value="Mumbai">🇮🇳 Mumbai, Maharashtra</option>
+                            <option value="Pune">🇮🇳 Pune, Maharashtra</option>
+                            <option value="Delhi">🇮🇳 Delhi, NCR</option>
+                            <option value="Bangalore">🇮🇳 Bangalore / Bengaluru, Karnataka</option>
+                            <option value="Hyderabad">🇮🇳 Hyderabad, Telangana</option>
+                            <option value="Ahmedabad">🇮🇳 Ahmedabad, Gujarat</option>
+                            <option value="Surat">🇮🇳 Surat, Gujarat</option>
+                            <option value="Chennai">🇮🇳 Chennai, Tamil Nadu</option>
+                            <option value="Kolkata">🇮🇳 Kolkata, West Bengal</option>
+                            <option value="Jaipur">🇮🇳 Jaipur, Rajasthan</option>
+                            <option value="Nagpur">🇮🇳 Nagpur, Maharashtra</option>
+                            <option value="Indore">🇮🇳 Indore, Madhya Pradesh</option>
+                            <option value="Chandigarh">🇮🇳 Chandigarh, Punjab/Haryana</option>
+                            <option value="Noida">🇮🇳 Noida, Uttar Pradesh</option>
+                            <option value="Gurgaon">🇮🇳 Gurgaon, Haryana</option>
+                            <option value="Abu Dhabi">🇦🇪 Abu Dhabi, UAE</option>
+                            <option value="Riyadh">🇸🇦 Riyadh, Saudi Arabia</option>
+                            <option value="London">🇬🇧 London, United Kingdom</option>
+                            <option value="New York">🇺🇸 New York, United States</option>
+                            <option value="Singapore">🇸🇬 Singapore</option>
+                        </datalist>
+                        <button onclick="triggerCitySearch()" title="Search leads for this city" class="ml-2 px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shadow glow-brand transition-all flex items-center gap-1">
+                            <span>🔍 Search</span>
+                        </button>
+                    </div>
+
+                    <!-- API Status Indicator -->
+                    <div class="flex items-center bg-dark-bg/60 border border-dark-border/80 px-2.5 py-1 rounded-full text-xs">
+                        <span id="api-status-dot" class="h-2 w-2 rounded-full bg-rose-500 mr-2"></span>
+                        <span id="api-status-text" class="text-slate-300 font-medium">Connecting...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full space-y-6">
+
+        <!-- Navigation Tabs -->
+        <div class="flex items-center justify-between border-b border-dark-border pb-1">
+            <div class="flex space-x-3">
+                <button id="tab-leads" onclick="switchTab('leads')" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md">
+                    🎯 Qualified Leads (<span id="tab-leads-count">0</span>)
+                </button>
+                <button id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all">
+                    ⚙️ Search & Control Panel
+                </button>
+            </div>
+            
+            <!-- Quick Stats Bar -->
+            <div class="hidden md:flex items-center gap-3 text-xs">
+                <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
+                    <span class="text-slate-400">Total Leads:</span> <strong id="quick-total" class="text-white">0</strong>
+                </div>
+                <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
+                    <span class="text-slate-400">100% No Website:</span> <strong id="quick-no-web" class="text-rose-400">0</strong>
+                </div>
+                <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
+                    <span class="text-slate-400">B2B Wholesalers:</span> <strong id="quick-b2b" class="text-indigo-400">0</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- LEADS VIEW (Default) -->
+        <div id="content-leads" class="tab-content block space-y-4">
+
+            <!-- 100% AUTONOMOUS CEO OUTREACH BAR -->
+            <div class="bg-gradient-to-r from-indigo-950/90 via-purple-950/70 to-slate-900 border border-indigo-500/40 rounded-xl p-4 shadow-2xl flex flex-wrap items-center justify-between gap-4 glow-brand">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-2xl shadow-inner">
+                        🤖
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-black text-white uppercase tracking-wider">100% Hands-Free CEO Outreach Engine</span>
+                            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 animate-pulse">AUTOPILOT READY</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-0.5">
+                            Auto-researches loophole & revenue leak, targets CEO, writes personalized pitch in native language, and dispatches automatically.
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center flex-wrap gap-2.5">
+                    <div class="flex items-center bg-dark-bg/80 border border-dark-border rounded-lg px-2.5 py-1.5 text-xs">
+                        <span class="text-slate-400 mr-2 text-[11px]">Language:</span>
+                        <select id="autopilot-lang-select" class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer">
+                            <option value="en" class="bg-slate-900">🇬🇧 English (Global/Dubai)</option>
+                            <option value="ar" class="bg-slate-900">🇦🇪 Arabic (العربية)</option>
+                            <option value="bilingual" class="bg-slate-900">🌐 Bilingual (English + Arabic)</option>
+                        </select>
+                    </div>
+                    <button onclick="openModal('modal-email-setup')" class="px-3 py-2 rounded-lg bg-dark-bg/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border text-xs font-semibold transition-all flex items-center gap-1.5">
+                        <span id="delivery-channel-badge">⚙️ Email Settings</span>
+                    </button>
+                    <button onclick="launchAutopilot()" id="btn-launch-autopilot" class="px-5 py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 shadow-xl glow-brand transition-all flex items-center gap-2 transform active:scale-95">
+                        <span>⚡ RUN AUTOPILOT OUTREACH NOW</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="bg-dark-card rounded-xl border border-dark-border p-4 shadow-lg flex flex-wrap items-center justify-between gap-3">
+                <!-- Segment Buttons -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="filterSegment('ALL')" id="seg-ALL" class="seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white">All Leads</button>
+                    <button onclick="filterSegment('B2B')" id="seg-B2B" class="seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🏢 B2B Wholesalers & Dealers</button>
+                    <button onclick="filterSegment('B2C')" id="seg-B2C" class="seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🛍️ B2C Retail & Services</button>
+                    <button onclick="filterSegment('HOT')" id="seg-HOT" class="seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🔥 HOT Priority Only</button>
+                </div>
+
+                <!-- Search Input & City Info -->
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Filter by name, category, or area..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full sm:w-64 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                    <button onclick="loadLeads()" class="px-3 py-2 bg-dark-hover hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-200 border border-dark-border transition-colors">
+                        🔄 Refresh
+                    </button>
+                </div>
+            </div>
+
+            <!-- Leads Table Card -->
+            <div class="bg-dark-card rounded-xl border border-dark-border shadow-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-900/80 border-b border-dark-border text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                <th class="py-3 px-4">Company & Location</th>
+                                <th class="py-3 px-3">Business Type</th>
+                                <th class="py-3 px-4">Identified Loophole</th>
+                                <th class="py-3 px-4">Target: CEO / Owner</th>
+                                <th class="py-3 px-3">Lead Score</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-tbody" class="divide-y divide-dark-border text-xs font-normal">
+                            <tr>
+                                <td colspan="6" class="text-center py-12 text-slate-500">
+                                    <div class="inline-block w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                    <p>Loading qualified leads...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Table Footer / Pagination -->
+                <div class="px-4 py-3 bg-slate-900/50 border-t border-dark-border flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                    <div>
+                        Showing <span id="leads-page-info" class="font-semibold text-white">0</span> verified leads
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="changePage(-1)" id="btn-prev-page" class="px-3 py-1 rounded bg-dark-bg border border-dark-border hover:bg-dark-hover text-slate-300 disabled:opacity-40" disabled>Previous</button>
+                        <span id="current-page-num" class="font-bold text-white px-2">1</span>
+                        <button onclick="changePage(1)" id="btn-next-page" class="px-3 py-1 rounded bg-dark-bg border border-dark-border hover:bg-dark-hover text-slate-300 disabled:opacity-40">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEARCH & CONTROL PANEL VIEW -->
+        <div id="content-dashboard" class="tab-content hidden space-y-6">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Control Panel -->
+                <div class="bg-dark-card rounded-xl border border-dark-border p-6 shadow-xl space-y-4">
+                    <div class="border-b border-dark-border pb-3">
+                        <h2 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🔍 Target Prospect Discovery</span>
+                        </h2>
+                        <p class="text-xs text-slate-400">Scan Google Maps & SerpApi for companies with NO website</p>
+                    </div>
+
+                    <form id="discovery-form" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target City / Hub</label>
+                            <input type="text" id="ctrl-city" value="Dubai" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2.5 text-xs text-white focus:ring-1 focus:ring-indigo-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Districts / Areas (comma-separated)</label>
+                            <textarea id="ctrl-areas" rows="2" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">Al Quoz Industrial, Ras Al Khor Industrial, Deira Wholesale, Business Bay, JAFZA</textarea>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Categories (B2B Dealers & Services)</label>
+                            <textarea id="ctrl-categories" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading llc, electrical suppliers wholesale</textarea>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Max Prospects</label>
+                                <input type="number" id="ctrl-max-leads" value="50" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-300 mb-1">Min Lead Score</label>
+                                <input type="number" id="ctrl-min-score" value="45" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white">
+                            </div>
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="button" onclick="startDiscovery()" class="w-full py-3 px-4 rounded-lg font-bold text-xs text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg glow-brand transition-all flex items-center justify-center gap-2">
+                                <span>🚀 LAUNCH PROSPECT DISCOVERY</span>
+                            </button>
+                        </div>
+                        <div id="discovery-status-msg" class="text-xs text-center font-medium p-2 rounded hidden"></div>
+                    </form>
+                </div>
+
+                <!-- Stats & Insights Column -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Target Prospects</div>
+                            <div class="mt-1 text-2xl font-black text-white" id="stat-total">0</div>
+                            <div class="text-[10px] text-emerald-400 mt-1">100% verified active leads</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">No Website (Strict)</div>
+                            <div class="mt-1 text-2xl font-black text-rose-400" id="stat-no-website">0</div>
+                            <div class="text-[10px] text-slate-400 mt-1">Zero web presence</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">B2B Wholesalers</div>
+                            <div class="mt-1 text-2xl font-black text-indigo-400" id="stat-b2b">0</div>
+                            <div class="text-[10px] text-indigo-300 mt-1">High-ticket commercial</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">HOT Leads (70+)</div>
+                            <div class="mt-1 text-2xl font-black text-amber-400" id="stat-hot">0</div>
+                            <div class="text-[10px] text-slate-400 mt-1">Highest converting</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">CEOs Located</div>
+                            <div class="mt-1 text-2xl font-black text-purple-400" id="stat-ceos">0</div>
+                            <div class="text-[10px] text-purple-300 mt-1">Direct decision makers</div>
+                        </div>
+                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Outreach Sent</div>
+                            <div class="mt-1 text-2xl font-black text-emerald-400" id="stat-contacted">0</div>
+                            <div class="text-[10px] text-slate-400 mt-1">Contacted via email/WA</div>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline & Architecture Explanation -->
+                    <div class="bg-dark-card border border-dark-border p-5 rounded-xl shadow-xl space-y-3">
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>⚡ How the Loophole-to-Website Acquisition System Works</span>
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                            <div class="bg-dark-bg p-3 rounded-lg border border-dark-border/60">
+                                <span class="font-bold text-indigo-400 block mb-1">1. Forensic Research</span>
+                                <p class="text-slate-400">Classifies B2B wholesale dealers vs B2C retail, calculates lost revenue, and identifies missing catalogs or RFQ portals.</p>
+                            </div>
+                            <div class="bg-dark-bg p-3 rounded-lg border border-dark-border/60">
+                                <span class="font-bold text-purple-400 block mb-1">2. Target CEO Only</span>
+                                <p class="text-slate-400">Bypasses junior staff & managers to locate the exact CEO, Owner, or Founder via Snov.io and professional records.</p>
+                            </div>
+                            <div class="bg-dark-bg p-3 rounded-lg border border-dark-border/60">
+                                <span class="font-bold text-emerald-400 block mb-1">3. The Best Pitch & Demo</span>
+                                <p class="text-slate-400">Pitches them on their exact loophole with an automated typewriter effect and delivers a live custom website mockup.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- MODAL 1: Automated Email Typewriter & CEO Pitch Studio -->
+    <div id="modal-pitch" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('modal-pitch')"></div>
+            
+            <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden z-10">
+                <!-- Header -->
+                <div class="px-6 py-4 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base font-bold text-white flex items-center gap-2">
+                                <span>⚡ CEO Outreach & Email Typewriter</span>
+                            </h3>
+                            <span id="modal-pitch-step-badge" class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">Step 1: Pitch</span>
+                        </div>
+                        <p id="modal-pitch-subtitle" class="text-xs text-slate-400 mt-0.5">Targeting CEO of [Company Name]</p>
+                    </div>
+                    <button onclick="closeModal('modal-pitch')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <!-- Sequence Step Selector, Language Selector & Auto-Type Trigger -->
+                <div class="px-6 py-3 bg-dark-bg border-b border-dark-border flex flex-wrap items-center justify-between gap-3">
+                    <div class="flex flex-wrap items-center gap-3">
+                        <!-- Outreach Stage -->
+                        <div class="flex items-center gap-1 text-xs">
+                            <span class="text-slate-400 mr-1 font-semibold">Stage:</span>
+                            <button onclick="loadPitchStep(1)" id="step-btn-1" class="px-2.5 py-1 rounded text-xs font-bold bg-indigo-600 text-white">1. Loophole Pitch</button>
+                            <button onclick="loadPitchStep(2)" id="step-btn-2" class="px-2.5 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white">2. Follow-Up (Day 3)</button>
+                            <button onclick="loadPitchStep(3)" id="step-btn-3" class="px-2.5 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white">3. Live Demo (Day 5)</button>
+                        </div>
+
+                        <!-- Language Selector (Dubai Arabic / English / Bilingual) -->
+                        <div class="flex items-center gap-1 text-xs border-l border-dark-border pl-3">
+                            <span class="text-slate-400 mr-1 font-semibold">Language:</span>
+                            <button onclick="setPitchLanguage('en')" id="lang-btn-en" class="px-2 py-1 rounded text-xs font-bold bg-indigo-600 text-white">🇬🇧 English</button>
+                            <button onclick="setPitchLanguage('ar')" id="lang-btn-ar" class="px-2 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white">🇦🇪 العربية (Arabic)</button>
+                            <button onclick="setPitchLanguage('bilingual')" id="lang-btn-bilingual" class="px-2 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white">🌐 Bilingual</button>
+                        </div>
+                    </div>
+
+                    <button type="button" onclick="startTypewriterAnimation()" id="btn-auto-type" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white shadow glow-brand flex items-center gap-1.5 transition-all">
+                        <span>⌨️ Auto-Type Email</span>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-4">
+                    <!-- Developer Credentials Banner -->
+                    <div class="px-3.5 py-2.5 bg-slate-900/90 border border-indigo-500/20 rounded-xl flex flex-wrap items-center justify-between text-xs text-slate-300 gap-2">
+                        <div class="flex items-center gap-2">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span>Pitch Designer: <strong class="text-white">Sandesh Barde</strong> (Full-Stack Web Architect, India)</span>
+                        </div>
+                        <div class="flex items-center gap-3 text-indigo-400 font-semibold">
+                            <a href="https://sandeshbarde.netlify.app/" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">🌐 Live Portfolio</a>
+                            <a href="https://github.com/sandeshbarde" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">💻 GitHub Repos</a>
+                            <a href="https://www.linkedin.com/in/sandesh-barde-26ba3839b/" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">🔗 LinkedIn</a>
+                        </div>
+                    </div>
+
+                    <!-- Recipient & Subject Bar -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Target Decision Maker</label>
+                            <input type="text" id="modal-pitch-ceo" placeholder="CEO / Owner" class="w-full text-xs p-2 rounded-lg bg-dark-bg border border-dark-border text-white">
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Recipient Direct Email</label>
+                                <button type="button" onclick="autoSuggestEmail()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold underline cursor-pointer">⚡ Auto-Suggest Email</button>
+                            </div>
+                            <input type="email" id="modal-pitch-email" placeholder="Type email or click Auto-Suggest..." class="w-full text-xs p-2 rounded-lg bg-dark-bg border border-dark-border text-white focus:ring-1 focus:ring-indigo-500">
+                            <div id="modal-email-note" class="text-[10px] text-amber-400 mt-1 flex items-center justify-between">
+                                <span>💡 Auto-suggested executive email active</span>
+                                <span class="text-slate-400">or use WhatsApp</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">WhatsApp / Phone</label>
+                            <input type="text" id="modal-pitch-phone" placeholder="+971 ..." class="w-full text-xs p-2 rounded-lg bg-dark-bg border border-dark-border text-white">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Email Subject Line</label>
+                        <input type="text" id="modal-pitch-subject" class="w-full text-xs p-2.5 rounded-lg bg-dark-bg border border-dark-border text-white font-medium">
+                    </div>
+
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Personalized Message Body</label>
+                            <span id="typing-indicator" class="text-[11px] font-medium text-indigo-400 hidden animate-pulse">⚡ Auto-typing in progress...</span>
+                        </div>
+                        <div class="relative">
+                            <textarea id="modal-pitch-content" rows="11" class="w-full p-3 text-xs bg-dark-bg border border-dark-border rounded-lg text-slate-200 font-mono focus:border-indigo-500 leading-relaxed"></textarea>
+                        </div>
+                    </div>
+
+                    <div id="modal-pitch-status" class="hidden text-xs font-medium text-center p-2 rounded-lg"></div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-slate-900 border-t border-dark-border flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" onclick="closeModal('modal-pitch')" class="px-4 py-2 rounded-lg text-xs font-medium bg-dark-hover text-slate-300 hover:text-white transition-colors">
+                        Close
+                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="copyPitch()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-dark-border flex items-center gap-1">
+                            <span>📋 Copy</span>
+                        </button>
+                        <button type="button" onclick="openWhatsApp()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1 shadow">
+                            <span>💬 WhatsApp</span>
+                        </button>
+                        <button type="button" onclick="openInGmail()" class="px-3.5 py-2 rounded-lg text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white flex items-center gap-1 shadow">
+                            <span>✉️ Open in Gmail</span>
+                        </button>
+                        <button type="button" onclick="sendEmailDirect()" id="btn-send-smtp" class="px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow glow-brand flex items-center gap-1">
+                            <span>🚀 Send via SMTP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 2: Live Personal Website Mockup Previewer -->
+    <div id="modal-preview" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/85 backdrop-blur-md" onclick="closeModal('modal-preview')"></div>
+            
+            <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-4xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[90vh]">
+                <!-- Browser Bar Mockup -->
+                <div class="px-6 py-3 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="flex space-x-1.5">
+                            <div class="w-3 h-3 rounded-full bg-rose-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-amber-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                        </div>
+                        <div class="ml-3 bg-dark-bg border border-dark-border px-4 py-1 rounded-md text-[11px] text-slate-300 font-mono w-72 truncate" id="preview-url-bar">
+                            https://preview.youragency.com/custom-concept
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs text-emerald-400 font-semibold">● Live Prototype Mockup</span>
+                        <button onclick="closeModal('modal-preview')" class="text-slate-400 hover:text-white ml-3 text-lg font-bold">✕</button>
+                    </div>
+                </div>
+
+                <!-- Simulated Website Content Canvas -->
+                <div class="overflow-y-auto p-6 space-y-8 bg-slate-950 text-white flex-grow font-sans" id="preview-canvas">
+                    <!-- Dynamic Hero Section -->
+                    <div class="text-center py-10 px-4 border border-indigo-500/20 rounded-2xl bg-gradient-to-b from-indigo-950/30 to-slate-900/40 relative overflow-hidden">
+                        <div class="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 mb-4" id="prev-badge">
+                            Official Commercial Portal
+                        </div>
+                        <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight text-white mb-3" id="prev-hero-title">
+                            Leading Commercial Supplier
+                        </h1>
+                        <p class="text-xs sm:text-sm text-slate-300 max-w-2xl mx-auto mb-6" id="prev-hero-subtitle">
+                            Serving corporate enterprises with verified specifications and immediate delivery.
+                        </p>
+                        <div class="flex justify-center gap-3">
+                            <button class="px-5 py-2.5 rounded-lg text-xs font-bold text-white bg-indigo-600 shadow-lg glow-brand" id="prev-cta-btn">
+                                Request Bulk Catalog / RFQ
+                            </button>
+                            <button class="px-4 py-2.5 rounded-lg text-xs font-semibold bg-dark-hover text-slate-200 border border-dark-border" id="prev-call-btn">
+                                📞 Call Direct
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Services & Product Catalog Grid -->
+                    <div class="space-y-4">
+                        <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 text-center">Bespoke Solutions & Capabilities</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="prev-services-grid">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Trust & RFQ Form Mockup -->
+                    <div class="bg-slate-900 border border-dark-border p-5 rounded-xl grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                        <div>
+                            <h3 class="text-base font-bold text-white">Direct Corporate RFQ & Inquiry</h3>
+                            <p class="text-xs text-slate-400 mt-1">Clients can submit quote requests 24/7 directly to the CEO/sales desk.</p>
+                            <div class="mt-4 text-xs space-y-1 text-slate-300">
+                                <p>📍 Location: <strong id="prev-loc" class="text-white">Dubai</strong></p>
+                                <p>📞 Phone: <strong id="prev-phone" class="text-white">+971 ...</strong></p>
+                            </div>
+                        </div>
+                        <div class="space-y-2">
+                            <input type="text" placeholder="Client Name / Organization" class="w-full p-2 bg-dark-bg border border-dark-border rounded text-xs text-white" disabled>
+                            <input type="text" placeholder="Product Requirements / Specs" class="w-full p-2 bg-dark-bg border border-dark-border rounded text-xs text-white" disabled>
+                            <button class="w-full py-2 bg-indigo-600 text-white font-bold text-xs rounded" disabled>Submit Quotation Request</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex justify-between items-center text-xs">
+                    <span class="text-slate-400">Share this interactive prototype directly with the CEO to prove your value.</span>
+                    <button onclick="closeModal('modal-preview')" class="px-4 py-1.5 rounded bg-dark-hover text-slate-200 hover:text-white">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: Forensic Company Loophole Dossier -->
+    <div id="modal-dossier" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('modal-dossier')"></div>
+            
+            <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden z-10">
+                <div class="px-6 py-4 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🔍 Forensic Company & Loophole Dossier</span>
+                        </h3>
+                        <p id="dossier-company-name" class="text-xs text-slate-400 mt-0.5">[Company Name]</p>
+                    </div>
+                    <button onclick="closeModal('modal-dossier')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <div class="p-6 space-y-4 text-xs">
+                    <!-- Company Overview & Turnover Metrics -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div class="sm:col-span-2 bg-dark-bg p-4 rounded-xl border border-dark-border">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400 block mb-1">Deep Business Profile & Intelligence</span>
+                            <p id="dossier-overview" class="text-slate-200 leading-relaxed">Loading company intelligence...</p>
+                        </div>
+                        <div class="bg-indigo-950/30 border border-indigo-500/30 p-4 rounded-xl space-y-2 flex flex-col justify-center">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-300">Est. Annual Turnover</span>
+                            <strong id="dossier-turnover" class="text-base font-black text-white">$1.5M - $4.0M</strong>
+                            <span class="text-[10px] text-slate-400">Based on industry volume</span>
+                        </div>
+                    </div>
+
+                    <!-- Critical Loophole Card -->
+                    <div class="bg-rose-950/20 border border-rose-900/40 p-4 rounded-xl space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-rose-400">Diagnosed Digital Loophole</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-500/20 text-rose-300">High Revenue Leak</span>
+                        </div>
+                        <h4 id="dossier-loophole-title" class="text-sm font-bold text-white">Missing Official Digital Presence</h4>
+                        <p id="dossier-loophole-desc" class="text-slate-300 leading-relaxed"></p>
+                        <div class="pt-2 border-t border-rose-900/30 flex items-center justify-between text-rose-300 font-semibold">
+                            <span>Calculated Annual Revenue Leak:</span>
+                            <strong id="dossier-revenue-leak" class="text-rose-200 text-sm">$45,000 - $120,000 / yr</strong>
+                        </div>
+                    </div>
+
+                    <!-- Competitor Threat -->
+                    <div class="bg-amber-950/20 border border-amber-900/40 p-3.5 rounded-xl space-y-1">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400">Competitor Threat in Area</span>
+                        <p id="dossier-competitor" class="text-slate-300 text-[11px] leading-relaxed"></p>
+                    </div>
+
+                    <!-- Custom Personal Website Blueprint & Deliverables -->
+                    <div class="bg-indigo-950/20 border border-indigo-900/40 p-4 rounded-xl space-y-3">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-bold uppercase tracking-wider text-indigo-400">The Solution: Custom Website Architecture</span>
+                            <span id="dossier-investment" class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-extrabold text-[10px]">5-7 Days Delivery</span>
+                        </div>
+                        <p id="dossier-blueprint" class="text-slate-200 leading-relaxed"></p>
+                        <div id="dossier-deliverables" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 border-t border-indigo-900/30 text-[11px] text-slate-300">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- CEO Pitch Hook -->
+                    <div class="bg-dark-bg p-3.5 rounded-xl border border-dark-border">
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400 block mb-1">Tailored Pitch Hook for CEO</span>
+                        <blockquote id="dossier-hook" class="text-slate-300 italic border-l-2 border-purple-500 pl-3"></blockquote>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex flex-wrap justify-between items-center gap-2">
+                    <div class="flex items-center gap-2">
+                        <a id="dossier-live-demo-link" href="#" target="_blank" class="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow glow-brand transition-all flex items-center gap-1.5">
+                            <span>🌐 Open Live Prototype Demo</span>
+                        </a>
+                        <button id="dossier-auto-send-btn" onclick="" class="px-3.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow transition-all flex items-center gap-1.5">
+                            <span>⚡ Auto-Send Pitch to CEO</span>
+                        </button>
+                    </div>
+                    <button onclick="closeModal('modal-dossier')" class="px-4 py-1.5 rounded-lg bg-dark-hover text-slate-200 hover:text-white text-xs">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 4: API Setup & Recommendations -->
+    <div id="modal-api-keys" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('modal-api-keys')"></div>
+            
+            <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden z-10 text-xs">
+                <div class="px-6 py-4 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>🔑 Recommended API Keys for Worldwide Lead Gen</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Which API keys to add for maximum deliverability & global scale</p>
+                    </div>
+                    <button onclick="closeModal('modal-api-keys')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <div class="p-6 space-y-4 overflow-y-auto max-h-[75vh]">
+                    <!-- Key 1: SerpApi -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-dark-border flex items-start gap-3">
+                        <span class="text-xl">🗺️</span>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-white">SerpApi Key (<code class="text-indigo-400 font-mono">SERPAPI_API_KEY</code>)</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">ACTIVE & CONFIGURED</span>
+                            </div>
+                            <p class="text-slate-400 mt-1">Extracts Google Maps and search results across Dubai, Riyadh, London, New York, and anywhere worldwide.</p>
+                        </div>
+                    </div>
+
+                    <!-- Key 2: Snov.io -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-dark-border flex items-start gap-3">
+                        <span class="text-xl">👤</span>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-white">Snov.io API (<code class="text-indigo-400 font-mono">SNOV_USER_ID</code> & <code class="text-indigo-400 font-mono">SNOV_SECRET</code>)</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">ACTIVE & CONFIGURED</span>
+                            </div>
+                            <p class="text-slate-400 mt-1">Discovers and verifies CEO, Founder, Owner, and Managing Director email addresses while filtering out staff.</p>
+                        </div>
+                    </div>
+
+                    <!-- Key 3: Resend API -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-indigo-500/30 glow-brand flex items-start gap-3">
+                        <span class="text-xl">🚀</span>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-indigo-300">Resend API (<code class="text-indigo-400 font-mono">RESEND_API_KEY</code>) — HIGHLY RECOMMENDED</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300">Free Tier: 3,000 emails/mo</span>
+                            </div>
+                            <p class="text-slate-300 mt-1">Bypasses Gmail SMTP restrictions and deliverability blocks. Sends cold outreach directly to executive inboxes with a 99.8% inbox delivery rate. Sign up free at <a href="https://resend.com" target="_blank" class="text-indigo-400 underline">resend.com</a>.</p>
+                        </div>
+                    </div>
+
+                    <!-- Key 4: Google Gemini -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-dark-border flex items-start gap-3">
+                        <span class="text-xl">🧠</span>
+                        <div class="flex-grow">
+                            <div class="flex items-center justify-between">
+                                <h4 class="font-bold text-white">Google Gemini API (<code class="text-indigo-400 font-mono">GEMINI_API_KEY</code>)</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400">RECOMMENDED</span>
+                            </div>
+                            <p class="text-slate-400 mt-1">Generates real-time AI reasoning for unique company niches. Get a free API key instantly at <a href="https://aistudio.google.com/app/apikey" target="_blank" class="text-indigo-400 underline">Google AI Studio</a>.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex justify-end">
+    <!-- MODAL 5: 100% Autonomous Outreach HUD Terminal (Autopilot) -->
+    <div id="modal-autopilot-progress" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/85 backdrop-blur-md" onclick="closeModal('modal-autopilot-progress')"></div>
+            
+            <div class="relative bg-dark-card border border-indigo-500/50 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden z-10 text-xs glow-brand">
+                <div class="px-6 py-4 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-400/40 flex items-center justify-center text-lg">
+                            🚀
+                        </div>
+                        <div>
+                            <h3 class="text-base font-extrabold text-white flex items-center gap-2">
+                                <span>Autonomous Outreach Dispatcher</span>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">100% AUTOPILOT</span>
+                            </h3>
+                            <p class="text-xs text-slate-400 mt-0.5">Diagnosing company loopholes, crafting CEO pitches & dispatching emails hands-free</p>
+                        </div>
+                    </div>
+                    <button onclick="closeModal('modal-autopilot-progress')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <!-- Progress Stats -->
+                    <div class="space-y-2">
+                        <div class="flex justify-between text-xs font-semibold">
+                            <span id="autopilot-progress-text" class="text-indigo-300">Ready to execute autonomous sequence...</span>
+                            <span id="autopilot-progress-percent" class="text-white font-mono">0%</span>
+                        </div>
+                        <div class="w-full bg-dark-bg rounded-full h-2.5 overflow-hidden border border-dark-border">
+                            <div id="autopilot-progress-bar" class="bg-gradient-to-r from-emerald-500 via-teal-400 to-indigo-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Live Terminal Output -->
+                    <div class="space-y-1.5">
+                        <div class="flex items-center justify-between text-[11px] text-slate-400">
+                            <span class="font-mono flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+                                Live Autonomous HUD Stream:
+                            </span>
+                            <span class="text-slate-500">Auto-scroll active</span>
+                        </div>
+                        <div id="autopilot-terminal" class="bg-slate-950/90 rounded-xl p-4 font-mono text-[11px] h-64 overflow-y-auto space-y-1.5 border border-slate-800 shadow-inner">
+                            <div class="text-slate-500">// Autonomous Outreach Engine initialized.</div>
+                            <div class="text-slate-500">// Ready to dispatch to verified CEO leads. Click 'Run' to begin.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex justify-between items-center">
+                    <span class="text-[11px] text-slate-400">Targeting CEOs directly • Sandesh Barde credentials embedded</span>
+                    <button onclick="closeModal('modal-autopilot-progress')" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow transition-all">Close HUD</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 6: Email Delivery Settings & Diagnostic Setup -->
+    <div id="modal-email-setup" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('modal-email-setup')"></div>
+            
+            <div class="relative bg-dark-card border border-dark-border rounded-2xl w-full max-w-xl shadow-2xl overflow-hidden z-10 text-xs">
+                <div class="px-6 py-4 bg-slate-900 border-b border-dark-border flex items-center justify-between">
+                    <div>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2">
+                            <span>⚙️ Autonomous Email Dispatch Settings</span>
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Configure Gmail SMTP or Resend API for direct, automated outreach</p>
+                    </div>
+                    <button onclick="closeModal('modal-email-setup')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <!-- Live Connection Status Alert -->
+                    <div id="email-setup-status-box" class="p-3.5 rounded-xl border border-indigo-500/30 bg-indigo-950/30 text-xs flex items-center justify-between">
+                        <div>
+                            <span class="text-slate-400 block text-[11px]">Current Sending Status:</span>
+                            <strong id="email-setup-status-text" class="text-indigo-300 font-bold">Checking credentials...</strong>
+                        </div>
+                        <button type="button" onclick="testEmailConnectionNow()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-dark-border text-xs font-semibold">
+                            🔄 Test Connection
+                        </button>
+                    </div>
+
+                    <!-- Channel 1: Resend (Recommended) -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-indigo-500/30 glow-brand space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-indigo-300 flex items-center gap-1.5">
+                                <span>🚀 Option 1: Resend API Key</span>
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400">BEST DELIVERABILITY</span>
+                            </h4>
+                            <a href="https://resend.com" target="_blank" class="text-[11px] text-indigo-400 hover:underline">Get Free API Key →</a>
+                        </div>
+                        <p class="text-[11px] text-slate-400">100% reliable HTTPS API. Bypasses Gmail SMTP login limits and password blocks.</p>
+                        <input type="password" id="cfg-resend-key" placeholder="re_123456789..." class="w-full bg-slate-900 border border-dark-border rounded-lg p-2.5 text-xs text-white font-mono focus:ring-1 focus:ring-indigo-500">
+                    </div>
+
+                    <!-- Channel 2: Gmail SMTP -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-dark-border space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-white flex items-center gap-1.5">
+                                <span>✉️ Option 2: Google Gmail SMTP</span>
+                            </h4>
+                            <a href="https://myaccount.google.com/apppasswords" target="_blank" class="text-[11px] text-purple-400 hover:underline">Create App Password →</a>
+                        </div>
+                        <div class="text-[11px] text-amber-300/90 bg-amber-950/40 p-2.5 rounded-lg border border-amber-800/40 leading-relaxed">
+                            <strong>⚠️ Important:</strong> Google mandates a <strong>16-letter App Password</strong> (e.g. <code class="font-mono bg-slate-900 px-1 py-0.5 rounded">abcd efgh ijkl mnop</code>). Your regular Gmail account password will be rejected by Google security with <code class="text-rose-300 font-mono">535 BadCredentials</code>.
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">Gmail Address</label>
+                                <input type="email" id="cfg-smtp-user" value="SandyWebX1@gmail.com" class="w-full bg-slate-900 border border-dark-border rounded-lg p-2 text-xs text-white font-mono">
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-semibold text-slate-400 mb-1">16-Letter App Password</label>
+                                <input type="password" id="cfg-smtp-pass" placeholder="Enter 16-letter App Password" class="w-full bg-slate-900 border border-dark-border rounded-lg p-2 text-xs text-white font-mono">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Channel 3: ZeroBounce Email Hygiene (Domain Protection) -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-emerald-500/30 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-emerald-300 flex items-center gap-1.5">
+                                <span>🛡️ ZeroBounce Email Hygiene</span>
+                                <span id="zb-badge-status" class="px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400">CHECKING CREDITS...</span>
+                            </h4>
+                            <a href="https://www.zerobounce.net/members/API" target="_blank" class="text-[11px] text-emerald-400 hover:underline">ZeroBounce API Console →</a>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Verifies CEO emails in real-time before sending to eliminate bounces, spam traps, and blacklisting.</p>
+                        <div class="flex items-center gap-2">
+                            <input type="password" id="cfg-zerobounce-key" value="41d41a42392043f096f80fc833240058" placeholder="ZeroBounce API Key..." class="flex-grow bg-slate-900 border border-dark-border rounded-lg p-2 text-xs text-white font-mono focus:ring-1 focus:ring-emerald-500">
+                            <button type="button" onclick="testZeroBounceNow()" class="px-3 py-2 rounded-lg bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/40 text-xs font-semibold whitespace-nowrap">
+                                🛡️ Test Credits
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Channel 4: Anthropic Claude AI (Executive Pitch & Forensics) -->
+                    <div class="p-4 rounded-xl bg-dark-bg border border-amber-500/30 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-amber-300 flex items-center gap-1.5">
+                                <span>🧠 Anthropic Claude AI (Forensics & CEO Pitch)</span>
+                                <span id="claude-badge-status" class="px-1.5 py-0.5 rounded text-[9px] font-black bg-amber-500/20 text-amber-400">CLAUDE INTEGRATED</span>
+                            </h4>
+                            <a href="https://console.anthropic.com/settings/keys" target="_blank" class="text-[11px] text-amber-400 hover:underline">Anthropic Console →</a>
+                        </div>
+                        <p class="text-[11px] text-slate-400">Powers deep company loophole analysis, financial turnover estimation, and hyper-personalized pitches for CEOs.</p>
+                        <div class="flex items-center gap-2">
+                            <input type="password" id="cfg-anthropic-key" placeholder="Paste full sk-ant-api03-... key here" class="flex-grow bg-slate-900 border border-dark-border rounded-lg p-2 text-xs text-white font-mono focus:ring-1 focus:ring-amber-500">
+                        </div>
+                        <p class="text-[10px] text-slate-500">💡 <em>Note: In Anthropic Console, click 'Create Key' and copy the full key starting with <code>sk-ant-api03-</code> before closing the modal.</em></p>
+                    </div>
+                </div>
+
+                <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex justify-between items-center">
+                    <button onclick="closeModal('modal-email-setup')" class="px-4 py-1.5 rounded-lg bg-dark-hover text-slate-200 hover:text-white text-xs">Cancel</button>
+                    <button onclick="saveEmailCredentialsNow()" class="px-5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow glow-brand transition-all flex items-center gap-1.5">
+                        <span>💾 Save & Apply</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Frontend Script Logic -->
+    <script>
+        window.API_BASE = (window.location.protocol.startsWith('http') && window.location.host) 
+            ? `${window.location.protocol}//${window.location.host}` 
+            : 'http://127.0.0.1:8000';
+        let currentCity = 'Dubai';
+        let currentSegment = 'ALL';
+        let allLeads = [];
+        let filteredLeads = [];
+        let currentPage = 1;
+        const pageSize = 12;
+
+        let activeLead = null;
+        let activePitchStep = 1;
+        let activePitchData = null;
+        let typewriterTimer = null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchHealth();
+            loadLeads();
+        });
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('bg-indigo-600', 'text-white', 'shadow-md');
+                el.classList.add('text-slate-400', 'hover:text-white', 'hover:bg-dark-hover');
+            });
+
+            document.getElementById(`content-${tab}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tab}`);
+            activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-dark-hover');
+            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+
+            if (tab === 'leads') {
+                loadLeads();
+            }
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            if (id === 'modal-pitch') {
+                clearInterval(typewriterTimer);
+                document.getElementById('typing-indicator').classList.add('hidden');
+            }
+        }
+
+        async function fetchHealth() {
+            try {
+                const res = await fetch(`${window.API_BASE}/health`);
+                if (res.ok) {
+                    document.getElementById('api-status-dot').className = 'h-2 w-2 rounded-full bg-emerald-400 mr-2';
+                    document.getElementById('api-status-text').textContent = 'Engine Online';
+                }
+            } catch (err) {
+                document.getElementById('api-status-dot').className = 'h-2 w-2 rounded-full bg-rose-500 mr-2';
+                document.getElementById('api-status-text').textContent = 'API Offline';
+            }
+        }
+
+        function onCityInputChange(city) {
+            if (!city) return;
+            currentCity = city.trim();
+            const ctrlCity = document.getElementById('ctrl-city');
+            if (ctrlCity) ctrlCity.value = currentCity;
+            loadLeads();
+        }
+
+        function onCityChange(city) {
+            onCityInputChange(city);
+        }
+
+        async function triggerCitySearch() {
+            const input = document.getElementById('global-city-input');
+            const city = (input ? input.value : currentCity).trim();
+            if (!city) {
+                alert('Please enter or select a city name (e.g. Pune, Mumbai, Delhi, Bangalore).');
+                return;
+            }
+            currentCity = city;
+            const ctrlCity = document.getElementById('ctrl-city');
+            if (ctrlCity) ctrlCity.value = currentCity;
+
+            // Switch to search control panel and trigger discovery
+            switchTab('dashboard');
+            const msgEl = document.getElementById('discovery-status-msg');
+            if (msgEl) {
+                msgEl.scrollIntoView({ behavior: 'smooth' });
+            }
+            if (confirm(`Start lead discovery for "${city}" with STRICT NO-WEBSITE filter?`)) {
+                startDiscovery();
+            }
+        }
+
+        // Fetch Leads
+        async function loadLeads() {
+            const tbody = document.getElementById('leads-tbody');
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><div class="inline-block w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2"></div><p>Loading verified leads...</p></td></tr>`;
+
+            try {
+                const url = `${window.API_BASE}/leads?limit=250`;
+                const res = await fetch(url);
+                const data = await res.json();
+                allLeads = data.leads || [];
+
+                updateDashboardStats(allLeads);
+                applyFilters();
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-rose-400">Failed to load leads: ${err.message}</td></tr>`;
+            }
+        }
+
+        function updateDashboardStats(leads) {
+            const total = leads.length;
+            const noWeb = leads.filter(l => l.website_status !== 'WEBSITE_WORKING').length;
+            const b2b = leads.filter(l => l.business_type === 'B2B' || l.is_dealer_or_wholesale).length;
+            const hot = leads.filter(l => l.lead_priority === 'HOT').length;
+            const ceos = leads.filter(l => l.decision_maker_name || l.decision_maker_email).length;
+            const contacted = leads.filter(l => l.contacted).length;
+
+            document.getElementById('tab-leads-count').textContent = total;
+            document.getElementById('quick-total').textContent = total;
+            document.getElementById('quick-no-web').textContent = noWeb;
+            document.getElementById('quick-b2b').textContent = b2b;
+
+            document.getElementById('stat-total').textContent = total;
+            document.getElementById('stat-no-website').textContent = noWeb;
+            document.getElementById('stat-b2b').textContent = b2b;
+            document.getElementById('stat-hot').textContent = hot;
+            document.getElementById('stat-ceos').textContent = ceos;
+            document.getElementById('stat-contacted').textContent = contacted;
+        }
+
+        function filterSegment(seg) {
+            currentSegment = seg;
+            document.querySelectorAll('.seg-btn').forEach(btn => {
+                btn.className = 'seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white';
+            });
+            document.getElementById(`seg-${seg}`).className = 'seg-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white';
+            applyFilters();
+        }
+
+        function applyFilters() {
+            const query = (document.getElementById('filter-search').value || '').toLowerCase().trim();
+
+            filteredLeads = allLeads.filter(lead => {
+                // Segment filter
+                if (currentSegment === 'B2B' && lead.business_type !== 'B2B' && !lead.is_dealer_or_wholesale) return false;
+                if (currentSegment === 'B2C' && lead.business_type === 'B2B') return false;
+                if (currentSegment === 'HOT' && lead.lead_priority !== 'HOT') return false;
+
+                // Search query
+                if (query) {
+                    const text = `${lead.business_name} ${lead.category || ''} ${lead.area || ''} ${lead.city || ''} ${lead.decision_maker_name || ''}`.toLowerCase();
+                    if (!text.includes(query)) return false;
+                }
+                return true;
+            });
+
+            currentPage = 1;
+            renderLeadsTable();
+        }
+
+        function renderLeadsTable() {
+            const tbody = document.getElementById('leads-tbody');
+            if (!filteredLeads.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><p class="text-base mb-1">No leads match this filter.</p><p class="text-xs">Click 'All Leads' or launch a new discovery run.</p></td></tr>`;
+                document.getElementById('leads-page-info').textContent = '0';
+                return;
+            }
+
+            const totalPages = Math.ceil(filteredLeads.length / pageSize) || 1;
+            const startIdx = (currentPage - 1) * pageSize;
+            const pageItems = filteredLeads.slice(startIdx, startIdx + pageSize);
+
+            document.getElementById('leads-page-info').textContent = `${startIdx + 1}-${Math.min(startIdx + pageSize, filteredLeads.length)} of ${filteredLeads.length}`;
+            document.getElementById('current-page-num').textContent = currentPage;
+            document.getElementById('btn-prev-page').disabled = (currentPage <= 1);
+            document.getElementById('btn-next-page').disabled = (currentPage >= totalPages);
+
+            tbody.innerHTML = pageItems.map(lead => {
+                const bTypeBadge = (lead.business_type === 'B2B' || lead.is_dealer_or_wholesale)
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">🏢 B2B DEALER</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">🛍️ B2C RETAIL</span>`;
+
+                const priorityBadge = lead.lead_priority === 'HOT'
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30">🔥 HOT (${lead.lead_score})</span>`
+                    : lead.lead_priority === 'WARM'
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-amber-500/20 text-amber-400 border border-amber-500/30">⚡ WARM (${lead.lead_score})</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400">LOW (${lead.lead_score})</span>`;
+
+                const ceoDisplay = lead.decision_maker_name
+                    ? `<div>
+                         <span class="font-bold text-white">${escapeHtml(lead.decision_maker_name)}</span>
+                         <span class="block text-[10px] text-purple-300">${escapeHtml(lead.decision_maker_title || 'CEO / Owner')}</span>
+                         ${lead.decision_maker_email ? `<span class="text-[10px] text-indigo-400 font-mono truncate block max-w-[140px]">${lead.decision_maker_email}</span>` : ''}
+                       </div>`
+                    : `<button onclick="discoverCEO('${lead.id}')" class="px-2 py-1 rounded bg-slate-800 hover:bg-purple-900/40 text-purple-300 border border-purple-800/40 text-[10px] font-bold transition-all">
+                         🔍 Locate CEO
+                       </button>`;
+
+                const loopholeText = lead.loophole_summary || "Missing B2B Digital RFQ Catalog";
+
+                return `
+                <tr class="hover:bg-dark-hover/60 transition-colors">
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white text-xs">${escapeHtml(lead.business_name)}</div>
+                        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                            <span>${escapeHtml(lead.category || 'Trading')}</span>
+                            <span>•</span>
+                            <span>📍 ${escapeHtml(lead.area || lead.city || 'Dubai')}</span>
+                            ${lead.google_rating ? `<span class="text-amber-400 font-semibold">★ ${lead.google_rating} (${lead.google_review_count || 0})</span>` : ''}
+                        </div>
+                    </td>
+                    <td class="py-3 px-3">${bTypeBadge}</td>
+                    <td class="py-3 px-4">
+                        <button onclick="openDossier('${lead.id}')" class="text-left group block">
+                            <span class="text-rose-400 text-[11px] font-bold flex items-center gap-1 group-hover:text-rose-300">
+                                <span>⚠️ ${escapeHtml(loopholeText)}</span>
+                            </span>
+                            <span class="text-[10px] text-amber-400/90 font-mono block mt-0.5">
+                                💸 Leak: ${lead.loophole_data && lead.loophole_data.estimated_revenue_leak ? escapeHtml(lead.loophole_data.estimated_revenue_leak.split('(')[0].trim()) : '$45k-$95k/yr'}
+                            </span>
+                        </button>
+                    </td>
+                    <td class="py-3 px-4">${ceoDisplay}</td>
+                    <td class="py-3 px-3">${priorityBadge}</td>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            ${lead.contacted
+                                ? `<span class="px-2.5 py-1 rounded-lg bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-[10px] font-black tracking-wider">✓ SENT</span>`
+                                : `<button onclick="autoSendSingleLead('${lead.id}')" id="btn-auto-${lead.id}" title="100% Autonomous 1-Click Pitch & Send to CEO" class="px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow flex items-center gap-1 transition-all">
+                                    <span>⚡ Auto-Send</span>
+                                   </button>`
+                            }
+                            <a href="/demo/${lead.id}" target="_blank" title="Open Full Live Prototype Website" class="px-2 py-1.5 rounded-lg bg-purple-950/60 hover:bg-purple-900 border border-purple-500/40 text-purple-300 font-bold text-xs transition-all flex items-center gap-1">
+                                <span>🌐 Live Demo</span>
+                            </a>
+                            <button onclick="openPitchStudio('${lead.id}')" class="px-2 py-1.5 rounded-lg bg-indigo-600/80 hover:bg-indigo-600 text-white font-medium text-xs flex items-center gap-1 transition-all">
+                                <span>Pitch</span>
+                            </button>
+                            <button onclick="openDossier('${lead.id}')" title="Forensic Loophole Dossier" class="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-dark-border text-xs">
+                                🔍
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderLeadsTable();
+        }
+
+        // CEO Discovery Action
+        async function discoverCEO(leadId) {
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${leadId}/find-ceo`, { method: 'POST' });
+                const data = await res.json();
+                if (data.decision_maker) {
+                    const lead = allLeads.find(l => l.id === leadId);
+                    if (lead) {
+                        lead.decision_maker_name = data.decision_maker.name;
+                        lead.decision_maker_title = data.decision_maker.title;
+                        lead.decision_maker_email = data.decision_maker.email;
+                    }
+                    renderLeadsTable();
+                }
+            } catch (err) {
+                alert(`Error locating CEO: ${err.message}`);
+            }
+        }
+
+        let activePitchLang = 'en';
+
+        function setPitchLanguage(lang) {
+            activePitchLang = lang;
+            ['en', 'ar', 'bilingual'].forEach(l => {
+                const btn = document.getElementById(`lang-btn-${l}`);
+                if (btn) {
+                    if (l === lang) {
+                        btn.className = 'px-2 py-1 rounded text-xs font-bold bg-indigo-600 text-white';
+                    } else {
+                        btn.className = 'px-2 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white';
+                    }
+                }
+            });
+            loadPitchStep(activePitchStep);
+        }
+
+        // Open Pitch Studio Modal
+        async function openPitchStudio(leadId) {
+            activeLead = allLeads.find(l => l.id === leadId);
+            if (!activeLead) return;
+
+            document.getElementById('modal-pitch-subtitle').textContent = `Targeting CEO / Owner of ${activeLead.business_name} (${activeLead.area || activeLead.city || 'Dubai'})`;
+            document.getElementById('modal-pitch-ceo').value = activeLead.decision_maker_name || 'CEO / Owner';
+            
+            // Auto-populate email ONLY if a real verified email exists! Never invent fake non-existent domains!
+            const emailToUse = (activeLead.decision_maker_email || activeLead.email || '').trim();
+            const emailInput = document.getElementById('modal-pitch-email');
+            emailInput.value = emailToUse;
+            
+            if (!emailToUse) {
+                emailInput.placeholder = 'No email on file — Enter email or pitch via 1-Click WhatsApp';
+                showStatus('modal-pitch-status', 'info', '💡 No verified email on file. Use 💬 WhatsApp (1-Click) or enter verified email above.');
+            } else {
+                emailInput.placeholder = 'recipient@company.com';
+                showStatus('modal-pitch-status', 'success', `Verified email loaded: ${emailToUse}`);
+            }
+            
+            document.getElementById('modal-pitch-phone').value = activeLead.phone || '';
+
+            openModal('modal-pitch');
+            loadPitchStep(1);
+        }
+
+        // Auto-Suggest / Search verified email from database & Apollo/Snov
+        async function autoSuggestEmail() {
+            if (!activeLead) return;
+            const emailInput = document.getElementById('modal-pitch-email');
+            showStatus('modal-pitch-status', 'info', '🔍 Searching Apollo / Snov.io databases for verified contact email...');
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${activeLead.id}/find-ceo`, { method: 'POST' });
+                const data = await res.json();
+                if (data.ceo_email) {
+                    emailInput.value = data.ceo_email;
+                    showStatus('modal-pitch-status', 'success', `✅ Verified email found: ${data.ceo_email}`);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Find CEO failed', e);
+            }
+
+            showStatus('modal-pitch-status', 'warning', '💡 No verified email found in databases. Please enter their direct email manually or click 💬 WhatsApp (1-Click) below.');
+        }
+
+        // Load Step 1, 2, or 3 Pitch
+        async function loadPitchStep(step) {
+            activePitchStep = step;
+            [1, 2, 3].forEach(s => {
+                const btn = document.getElementById(`step-btn-${s}`);
+                if (btn) {
+                    if (s === step) {
+                        btn.className = 'px-2.5 py-1 rounded text-xs font-bold bg-indigo-600 text-white';
+                    } else {
+                        btn.className = 'px-2.5 py-1 rounded text-xs font-bold bg-slate-800 text-slate-300 hover:text-white';
+                    }
+                }
+            });
+
+            const langLabel = activePitchLang === 'ar' ? 'العربية' : activePitchLang === 'bilingual' ? 'Bilingual' : 'English';
+            document.getElementById('modal-pitch-step-badge').textContent = `Step ${step} (${langLabel}): ${step === 1 ? 'Loophole Pitch' : step === 2 ? 'Follow-Up 1' : 'Demo Prototype'}`;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${activeLead.id}/generate-pitch`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ sequence_step: step, language: activePitchLang })
+                });
+                const data = await res.json();
+
+                let rawPitch = data.pitch;
+                let subject = '';
+                let body = '';
+
+                if (typeof rawPitch === 'string') {
+                    body = rawPitch;
+                    subject = `Strategic Digital Proposal for ${activeLead.business_name}`;
+                    activePitchData = { subject: subject, body: body, step: step };
+                } else if (rawPitch && typeof rawPitch === 'object') {
+                    body = rawPitch.body || rawPitch.text || rawPitch.pitch || '';
+                    subject = rawPitch.subject || `Strategic Digital Proposal for ${activeLead.business_name}`;
+                    activePitchData = { ...rawPitch, subject: subject, body: body, step: step };
+                } else if (data.pitch_text) {
+                    body = data.pitch_text;
+                    subject = `Strategic Digital Proposal for ${activeLead.business_name}`;
+                    activePitchData = { subject: subject, body: body, step: step };
+                } else {
+                    body = 'Dear Leadership,\n\nWe prepared a custom digital proposal for your business.\n\nBest regards,\nSandesh Barde';
+                    subject = `Strategic Digital Proposal for ${activeLead.business_name}`;
+                    activePitchData = { subject: subject, body: body, step: step };
+                }
+
+                document.getElementById('modal-pitch-subject').value = activePitchData.subject || '';
+                
+                // Automatically run typing animation on step change
+                startTypewriterAnimation();
+            } catch (err) {
+                document.getElementById('modal-pitch-content').value = `Error generating pitch: ${err.message}`;
+            }
+        }
+
+        // Typewriter Animation Engine
+        function startTypewriterAnimation() {
+            const textarea = document.getElementById('modal-pitch-content');
+            const indicator = document.getElementById('typing-indicator');
+            const fullText = (activePitchData && (activePitchData.body || activePitchData.text))
+                ? (activePitchData.body || activePitchData.text)
+                : (typeof activePitchData === 'string' ? activePitchData : '');
+
+            if (!fullText) {
+                if (indicator) indicator.classList.add('hidden');
+                return;
+            }
+
+            clearInterval(typewriterTimer);
+            textarea.value = '';
+            if (indicator) indicator.classList.remove('hidden');
+
+            let index = 0;
+            const speed = 8; // Fast, fluid typing animation
+
+            typewriterTimer = setInterval(() => {
+                const chunk = fullText.slice(index, index + 6);
+                textarea.value += chunk;
+                index += 6;
+                textarea.scrollTop = textarea.scrollHeight;
+
+                if (index >= fullText.length) {
+                    clearInterval(typewriterTimer);
+                    textarea.value = fullText;
+                    if (indicator) indicator.classList.add('hidden');
+                }
+            }, speed);
+        }
+
+        // Open Website Preview Modal
+        async function openWebsitePreview(leadId) {
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) return;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${leadId}/website-preview`);
+                const data = await res.json();
+
+                document.getElementById('preview-url-bar').textContent = `https://preview.agency-engine.com/${lead.business_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+                document.getElementById('prev-badge').textContent = `Official ${data.business_type} Portal`;
+                document.getElementById('prev-hero-title').textContent = data.hero_title;
+                document.getElementById('prev-hero-subtitle').textContent = data.hero_subtitle;
+                document.getElementById('prev-cta-btn').textContent = data.primary_cta;
+                document.getElementById('prev-loc').textContent = data.location;
+                document.getElementById('prev-phone').textContent = data.phone;
+
+                const grid = document.getElementById('prev-services-grid');
+                grid.innerHTML = data.services.map(s => `
+                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl text-left">
+                        <span class="text-indigo-400 font-bold block mb-1 text-xs">✓ ${escapeHtml(s.title)}</span>
+                        <p class="text-[11px] text-slate-300">${escapeHtml(s.desc)}</p>
+                    </div>
+                `).join('');
+
+                openModal('modal-preview');
+            } catch (err) {
+                alert(`Failed to load website mockup: ${err.message}`);
+            }
+        }
+
+        // Open Loophole Dossier Modal
+        async function openDossier(leadId) {
+            const lead = allLeads.find(l => l.id === leadId);
+            if (!lead) return;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${leadId}/loophole-research`);
+                const data = await res.json();
+                const lp = data.loophole || {};
+
+                document.getElementById('dossier-company-name').textContent = `${data.business_name} (${data.business_type} ${data.is_dealer_or_wholesale ? 'Wholesale Dealer' : ''})`;
+                document.getElementById('dossier-overview').textContent = lp.company_overview || "Established business with solid physical presence.";
+                document.getElementById('dossier-turnover').textContent = lp.estimated_annual_turnover || "$1,200,000 - $3,000,000";
+                document.getElementById('dossier-loophole-title').textContent = lp.primary_loophole || "Missing Official Website";
+                document.getElementById('dossier-loophole-desc').textContent = lp.loophole_details || "No online presence, leading corporate inquiries to competitors.";
+                document.getElementById('dossier-revenue-leak').textContent = lp.estimated_revenue_leak || "$45,000 - $95,000 / yr";
+                document.getElementById('dossier-competitor').textContent = lp.competitor_threat || "Active competitors in area with web portals are capturing corporate RFQ submissions.";
+                document.getElementById('dossier-blueprint').textContent = lp.website_solution_blueprint || "Custom website with modern catalog.";
+                document.getElementById('dossier-hook').textContent = `"${lp.ceo_pitch_hook || 'We can help capture your lost inquiries.'}"`;
+
+                const deliverablesEl = document.getElementById('dossier-deliverables');
+                const deliverables = lp.proposal_deliverables || [
+                    "Custom Responsive Website", "Interactive Catalog", "B2B RFQ Quotation Form", "WhatsApp Hotline", "Local Google SEO"
+                ];
+                deliverablesEl.innerHTML = deliverables.map(d => `<span class="flex items-center gap-1"><span class="text-emerald-400">✓</span> ${escapeHtml(d)}</span>`).join('');
+
+                const demoLink = document.getElementById('dossier-live-demo-link');
+                demoLink.href = `/demo/${leadId}`;
+
+                const autoBtn = document.getElementById('dossier-auto-send-btn');
+                autoBtn.onclick = () => {
+                    closeModal('modal-dossier');
+                    autoSendSingleLead(leadId);
+                };
+
+                openModal('modal-dossier');
+            } catch (err) {
+                alert(`Error loading dossier: ${err.message}`);
+            }
+        }
+
+        // Outreach Action Handlers
+        function copyPitch() {
+            const text = document.getElementById('modal-pitch-content').value;
+            navigator.clipboard.writeText(text).then(() => {
+                showStatus('modal-pitch-status', 'success', '📋 Pitch copied to clipboard!');
+            });
+        }
+
+        function openInGmail() {
+            let email = document.getElementById('modal-pitch-email').value.trim();
+            if (!email && activeLead) {
+                email = getSuggestedEmail(activeLead.business_name, activeLead.city);
+                document.getElementById('modal-pitch-email').value = email;
+            }
+            const encodedEmail = encodeURIComponent(email);
+            const subject = encodeURIComponent(document.getElementById('modal-pitch-subject').value);
+            const body = encodeURIComponent(document.getElementById('modal-pitch-content').value);
+            window.open(`https://mail.google.com/mail/?view=cm&fs=1&to=${encodedEmail}&su=${subject}&body=${body}`, '_blank');
+        }
+
+        function openWhatsApp() {
+            let phone = document.getElementById('modal-pitch-phone').value.replace(/[^0-9]/g, '');
+            if (!phone) {
+                alert('No phone number available for this business.');
+                return;
+            }
+            const body = encodeURIComponent(document.getElementById('modal-pitch-content').value);
+            window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${body}`, '_blank');
+        }
+
+        async function sendEmailDirect() {
+            let email = document.getElementById('modal-pitch-email').value.trim();
+            const subject = document.getElementById('modal-pitch-subject').value.trim();
+            const body = document.getElementById('modal-pitch-content').value.trim();
+
+            if (!email) {
+                alert('⚠️ No email address available for this business.\n\nLocal businesses without websites rarely have custom domain emails. Please click "💬 WhatsApp" to pitch them directly on their phone number!');
+                showStatus('modal-pitch-status', 'warning', '⚠️ Please enter a verified email or click "💬 WhatsApp" below.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-send-smtp');
+            btn.disabled = true;
+            btn.textContent = 'Sending via Gmail SMTP...';
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/${activeLead.id}/send-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ recipient_email: email, subject: subject, body: body, force_send: true })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    if (data.delivered) {
+                        showStatus('modal-pitch-status', 'success', `✅ Dispatched via Gmail to ${email}! Check your Gmail Sent folder.`);
+                        alert(`✅ Email delivered to ${email} via Gmail SMTP!\nCheck your Gmail Sent folder.`);
+                    } else {
+                        showStatus('modal-pitch-status', 'warning', data.message || 'Email staged.');
+                        alert(data.message || 'Email draft staged.');
+                    }
+                } else {
+                    showStatus('modal-pitch-status', 'error', data.detail || 'Failed to send.');
+                    alert(`Send failed: ${data.detail || 'Unknown error'}`);
+                }
+            } catch (err) {
+                showStatus('modal-pitch-status', 'error', `SMTP Error: ${err.message}. Click 'Open in Gmail' to send via your browser.`);
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>🚀 Send via SMTP</span>';
+            }
+        }
+
+        // Purge Existing Websites Utility
+        async function purgeWebsites() {
+            if (!confirm('This will purge any business in the database that has an active working website, ensuring ONLY 100% no-website leads remain. Proceed?')) return;
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/purge-existing-websites`, { method: 'POST' });
+                const data = await res.json();
+                alert(`Purge complete: ${data.message}`);
+                loadLeads();
+            } catch (err) {
+                alert(`Purge failed: ${err.message}`);
+            }
+        }
+
+        // Launch Discovery Run
+        async function startDiscovery() {
+            const city = document.getElementById('ctrl-city').value.trim();
+            const areas = document.getElementById('ctrl-areas').value.split(',').map(s => s.trim()).filter(Boolean);
+            const categories = document.getElementById('ctrl-categories').value.split(',').map(s => s.trim()).filter(Boolean);
+            const maxLeads = parseInt(document.getElementById('ctrl-max-leads').value) || 50;
+
+            const msgEl = document.getElementById('discovery-status-msg');
+            msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-indigo-900/30 text-indigo-300 block';
+            msgEl.textContent = `🚀 Starting search job for ${city}... Strict No-Website Filter active!`;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/jobs/start`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        city: city,
+                        areas: areas,
+                        categories: categories,
+                        max_businesses: maxLeads
+                    })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-emerald-900/30 text-emerald-300 block';
+                    msgEl.textContent = `✅ Job started (ID: ${data.job_id || 'running'}). Discovering 100% no-website leads in the background.`;
+                    setTimeout(() => loadLeads(), 3000);
+                } else {
+                    msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-rose-900/30 text-rose-300 block';
+                    msgEl.textContent = data.detail || 'Failed to start job.';
+                }
+            } catch (err) {
+                msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-rose-900/30 text-rose-300 block';
+                msgEl.textContent = `Error: ${err.message}`;
+            }
+        }
+
+        function showStatus(elemId, type, msg) {
+            const el = document.getElementById(elemId);
+            el.className = `text-xs font-medium text-center p-2 rounded-lg block ${type === 'success' ? 'bg-emerald-950/60 text-emerald-400 border border-emerald-800/50' : 'bg-rose-950/60 text-rose-400 border border-rose-800/50'}`;
+            el.textContent = msg;
+        }
+
+        // --- 100% Autonomous Outreach & Autopilot Engine ---
+
+        async function checkDeliveryStatus() {
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/automation/status`);
+                const data = await res.json();
+                const conn = data.connection || {};
+                const zb = conn.zerobounce || {};
+                const badge = document.getElementById('delivery-channel-badge');
+                const statusBox = document.getElementById('email-setup-status-text');
+                const zbBadge = document.getElementById('zb-badge-status');
+
+                let zbText = zb.active ? ` • <span class="text-emerald-400 font-bold">🛡️ ZeroBounce (${zb.credits} Cr)</span>` : '';
+                if (zbBadge) {
+                    zbBadge.textContent = zb.active ? `${zb.credits} CREDITS ACTIVE` : 'INACTIVE';
+                    zbBadge.className = zb.active ? 'px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400' : 'px-1.5 py-0.5 rounded text-[9px] font-black bg-slate-700 text-slate-300';
+                }
+
+                if (conn.active) {
+                    badge.innerHTML = `🟢 Live Sending: <span class="text-emerald-400 font-bold ml-1">${escapeHtml(conn.provider)}</span>${zbText}`;
+                    if (statusBox) statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✓ ${escapeHtml(conn.provider)} Connected</span> (${escapeHtml(conn.details || 'Ready for outreach')})`;
+                } else {
+                    badge.innerHTML = `⚙️ Delivery Channel: <span class="text-amber-400 font-bold ml-1">Setup / Staged</span>${zbText}`;
+                    if (statusBox) statusBox.innerHTML = `<span class="text-amber-400 font-bold">⚠️ ${escapeHtml(conn.status || 'Pending')}</span>: ${escapeHtml(conn.error || conn.details || 'Enter credentials below')}`;
+                }
+            } catch (e) {
+                console.warn('Status check failed:', e);
+            }
+        }
+
+        async function testZeroBounceNow() {
+            const zbBadge = document.getElementById('zb-badge-status');
+            if (zbBadge) zbBadge.textContent = 'CHECKING...';
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/automation/zerobounce-status`);
+                const data = await res.json();
+                if (data.active) {
+                    if (zbBadge) {
+                        zbBadge.textContent = `${data.credits} CREDITS ACTIVE`;
+                        zbBadge.className = 'px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400';
+                    }
+                    alert(`✅ ZeroBounce Active & Verified!\nAvailable Credits: ${data.credits}\nEmail hygiene shield is protecting your domain reputation.`);
+                } else {
+                    if (zbBadge) zbBadge.textContent = 'INACTIVE';
+                    alert('ZeroBounce is currently inactive. Please check your API key.');
+                }
+                checkDeliveryStatus();
+            } catch (err) {
+                alert(`ZeroBounce test error: ${err.message}`);
+            }
+        }
+
+        async function testEmailConnectionNow() {
+            const statusBox = document.getElementById('email-setup-status-text');
+            statusBox.innerHTML = `<span class="text-indigo-400 animate-pulse">Testing delivery connection...</span>`;
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/automation/test-connection`, { method: 'POST' });
+                const conn = await res.json();
+                if (conn.active) {
+                    statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Success!</span> ${escapeHtml(conn.provider)} is active and authenticated.`;
+                } else {
+                    statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ ${escapeHtml(conn.status || 'Failed')}:</span> <span class="text-slate-300">${escapeHtml(conn.error || conn.details || 'Check details')}</span>`;
+                }
+                checkDeliveryStatus();
+            } catch (err) {
+                statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ Connection test error:</span> ${err.message}`;
+            }
+        }
+
+        async function saveEmailCredentialsNow() {
+            const resendKey = document.getElementById('cfg-resend-key').value.trim();
+            const smtpUser = document.getElementById('cfg-smtp-user').value.trim();
+            const smtpPass = document.getElementById('cfg-smtp-pass').value.trim();
+            const zbKey = document.getElementById('cfg-zerobounce-key').value.trim();
+            const claudeKey = document.getElementById('cfg-anthropic-key').value.trim();
+
+            const payload = {};
+            if (resendKey) payload.resend_api_key = resendKey;
+            if (smtpUser) payload.smtp_username = smtpUser;
+            if (smtpPass) payload.smtp_password = smtpPass;
+            if (zbKey) payload.zerobounce_api_key = zbKey;
+            if (claudeKey) payload.anthropic_api_key = claudeKey;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/automation/credentials`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    alert('✅ Settings saved! Testing connection...');
+                    testEmailConnectionNow();
+                    testZeroBounceNow();
+                    checkDeliveryStatus();
+                } else {
+                    alert(`Save failed: ${data.detail || 'Unknown error'}`);
+                }
+            } catch (err) {
+                alert(`Error saving credentials: ${err.message}`);
+            }
+        }
+
+        async function launchAutopilot() {
+            openModal('modal-autopilot-progress');
+            const terminal = document.getElementById('autopilot-terminal');
+            const pBar = document.getElementById('autopilot-progress-bar');
+            const pText = document.getElementById('autopilot-progress-text');
+            const pPercent = document.getElementById('autopilot-progress-percent');
+            const lang = document.getElementById('autopilot-lang-select').value || 'en';
+
+            terminal.innerHTML = '';
+            function log(msg, color = 'text-emerald-400') {
+                const line = document.createElement('div');
+                line.className = `${color} text-[11px] leading-relaxed`;
+                line.innerHTML = `<span class="text-slate-500 font-mono">[${new Date().toLocaleTimeString()}]</span> ${msg}`;
+                terminal.appendChild(line);
+                terminal.scrollTop = terminal.scrollHeight;
+            }
+
+            log('🤖 Initializing 100% Autonomous CEO Outreach Engine (Autopilot)...', 'text-indigo-300 font-extrabold');
+            log('Enforcing strict policy: 100% verified NO-WEBSITE businesses only.', 'text-slate-400');
+            log(`Language Cadence: ${lang.toUpperCase()} (Dubai / Global executive format)`, 'text-slate-400');
+            log('Developer Credentials: Sandesh Barde (India) • Portfolio & GitHub embedded', 'text-purple-300');
+            
+            pBar.style.width = '20%';
+            pPercent.textContent = '20%';
+            pText.textContent = 'Scanning database for uncontacted CEO prospects...';
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/automation/dispatch-all`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        language: lang,
+                        max_leads: 50,
+                        throttle_seconds: 0.5
+                    })
+                });
+                const data = await res.json();
+                const summary = data.summary || {};
+
+                pBar.style.width = '75%';
+                pPercent.textContent = '75%';
+                pText.textContent = 'Processing leads, diagnosing loopholes, and dispatching pitches...';
+
+                if (summary.results && summary.results.length > 0) {
+                    summary.results.forEach((r, idx) => {
+                        const statusColor = r.status === 'SENT' ? 'text-emerald-400 font-bold' : (r.status === 'STAGED' ? 'text-amber-400 font-bold' : 'text-rose-400');
+                        const methodBadge = r.method ? `[${r.method.toUpperCase()}]` : '';
+                        log(`⚡ (${idx + 1}/${summary.results.length}) ${escapeHtml(r.business_name)} -> ${escapeHtml(r.ceo_name)} (${escapeHtml(r.recipient_email)}) [${r.status} ${methodBadge}]`, statusColor);
+                        if (r.error) {
+                            log(`   ↳ Diagnostic: ${escapeHtml(r.error)}`, 'text-rose-300 text-[10px]');
+                        }
+                    });
+                } else {
+                    log('ℹ️ No uncontacted leads found. All qualified leads have already received pitches!', 'text-amber-300');
+                }
+
+                pBar.style.width = '100%';
+                pPercent.textContent = '100%';
+                pText.textContent = `Completed! ${summary.dispatched || 0} leads processed autonomously.`;
+                log(`🎉 Autonomous campaign execution complete! Dispatched: ${summary.dispatched}, Failed: ${summary.failed}`, 'text-emerald-300 font-black');
+
+                loadLeads();
+                checkDeliveryStatus();
+            } catch (err) {
+                log(`❌ Outreach execution error: ${err.message}`, 'text-rose-400 font-bold');
+                pText.textContent = 'Error occurred during autonomous outreach.';
+            }
+        }
+
+        async function autoSendSingleLead(leadId) {
+            const btn = document.getElementById(`btn-auto-${leadId}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
+            }
+
+            try {
+                const lang = document.getElementById('autopilot-lang-select').value || 'en';
+                const res = await fetch(`${window.API_BASE}/leads/${leadId}/auto-pitch-and-send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ language: lang, sequence_step: 1 })
+                });
+                const data = await res.json();
+                if (res.ok && data.success) {
+                    alert(`✅ Autonomous pitch dispatched to ${data.ceo_name} (${data.recipient_email}) via ${data.method}!`);
+                } else {
+                    alert(`ℹ️ Outreach processed: Status is ${data.status || 'staged'}. ${data.error || data.message || ''}`);
+                }
+                loadLeads();
+                checkDeliveryStatus();
+            } catch (err) {
+                alert(`Error: ${err.message}`);
+                loadLeads();
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        // Call checkDeliveryStatus on startup
+        document.addEventListener('DOMContentLoaded', () => {
+            checkDeliveryStatus();
+        });
+    </script>
+
+    <!-- Footer with Developer Portfolio & Verification -->
+    <footer class="border-t border-dark-border py-4 px-4 sm:px-8 bg-slate-950/80 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-3 mt-auto">
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span>Developed by <strong class="text-white">Sandesh Barde</strong> (India) • Full-Stack Web Architect & UI/UX Specialist</span>
+        </div>
+        <div class="flex items-center gap-4 text-indigo-400 font-semibold">
+            <a href="https://sandeshbarde.netlify.app/" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">🌐 Portfolio</a>
+            <a href="https://github.com/sandeshbarde" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">💻 GitHub Repositories</a>
+            <a href="https://www.linkedin.com/in/sandesh-barde-26ba3839b/" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">🔗 LinkedIn Profile</a>
+        </div>
+    </footer>
+</body>
+</html>

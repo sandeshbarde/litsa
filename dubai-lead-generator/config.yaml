@@ -1,0 +1,150 @@
+# Global Business Lead Generator - Configuration
+
+default_city: Dubai
+default_country: United Arab Emirates
+
+global_cities:
+  - name: Dubai
+    country: United Arab Emirates
+    areas:
+      - Al Quoz Industrial
+      - Ras Al Khor Industrial
+      - Deira Wholesale
+      - Business Bay
+      - JAFZA
+      - Al Barsha
+      - Bur Dubai
+      - Al Karama
+      - Al Khabaisi
+      - JVC
+      - Dubai Marina
+  - name: Abu Dhabi
+    country: United Arab Emirates
+    areas:
+      - Mussafah Industrial
+      - Al Zahiyah
+      - Al Reem Island
+      - Al Khalidiyah
+  - name: Riyadh
+    country: Saudi Arabia
+    areas:
+      - Al Olaya
+      - Al Sulimaniyah
+      - Al Malaz
+      - Second Industrial City
+  - name: London
+    country: United Kingdom
+    areas:
+      - Mayfair
+      - City of London
+      - Shoreditch
+      - Park Royal Industrial
+      - Canary Wharf
+  - name: New York
+    country: United States
+    areas:
+      - Manhattan
+      - Brooklyn Industrial
+      - Queens Long Island City
+      - Midtown
+  - name: Singapore
+    country: Singapore
+    areas:
+      - Jurong Industrial
+      - Marina Bay
+      - Orchard
+      - Woodlands
+  - name: Toronto
+    country: Canada
+    areas:
+      - Downtown Toronto
+      - Mississauga Industrial
+      - Vaughan
+  - name: Sydney
+    country: Australia
+    areas:
+      - CBD
+      - Alexandria Industrial
+      - Parramatta
+  - name: Mumbai
+    country: India
+    areas:
+      - BKC
+      - Andheri Industrial
+      - Lower Parel
+      - Navi Mumbai
+
+areas:
+  - Al Quoz Industrial
+  - Ras Al Khor Industrial
+  - Deira Wholesale
+  - Business Bay
+  - JAFZA
+  - Al Barsha
+  - Bur Dubai
+  - Al Karama
+  - Al Khabaisi
+  - JVC
+  - Dubai Marina
+  - Al Nahda
+  - Satwa
+  - International City
+
+categories:
+  # High-Ticket B2B Wholesalers & Dealers (Primary Focus)
+  - building materials wholesale
+  - auto spare parts wholesale
+  - industrial equipment suppliers
+  - fmcg distributors wholesale
+  - electrical suppliers wholesale
+  - hardware tools wholesale
+  - general trading llc
+  - heavy machinery parts
+  - commercial kitchen equipment
+  - packaging materials wholesale
+  # High-Value B2C & Local Services
+  - luxury jewellery shops
+  - perfume boutiques
+  - car garages
+  - auto repair
+  - furniture stores
+  - interior design contractors
+  - medical clinics
+  - dental clinics
+  - salons
+  - barbershops
+  - restaurants
+  - real estate agencies
+
+lead_scoring:
+  no_website: 50
+  b2b_wholesale: 20
+  active_social: 10
+  reviews_100_plus: 15
+  reviews_50_99: 10
+  phone_available: 10
+  no_booking_flow: 10
+  good_public_info: 5
+  thresholds:
+    hot: 70
+    warm: 45
+
+website_check:
+  timeout_seconds: 10
+  verify_ssl: false
+  follow_redirects: true
+  max_redirects: 5
+
+sheets:
+  spreadsheet_name: Global Business Leads
+  worksheet_name: Leads
+  batch_size: 50
+
+scheduler:
+  enabled: false
+  cron: "0 10 * * *"  # 10:00 AM daily
+
+logging:
+  level: INFO
+  rotation: "10 MB"
+  retention: "30 days"
