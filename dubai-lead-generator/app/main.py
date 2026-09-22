@@ -136,8 +136,7 @@ app.include_router(sync_router)
 app.include_router(auth_router)
 app.include_router(webhooks_router)
 
-# Static dashboard
-dashboard_dir = Path("dashboard")
+dashboard_dir = Path(__file__).resolve().parent.parent / "dashboard"
 if dashboard_dir.exists():
     app.mount("/dashboard", StaticFiles(directory=str(dashboard_dir), html=True), name="dashboard")
 

@@ -13,6 +13,9 @@ from app.config import settings
 
 logger = logging.getLogger(__name__)
 
+import os
+import tempfile
+
 # Engine configuration
 _engine_kwargs = {}
 db_url = settings.database_url
@@ -20,6 +23,9 @@ if db_url.startswith("postgres://"):
     db_url = db_url.replace("postgres://", "postgresql://", 1)
 
 if db_url.startswith("sqlite"):
+    if os.environ.get("VERCEL") and ("dubai_leads.db" in db_url):
+        tmp_db = os.path.join(tempfile.gettempdir(), "dubai_leads.db")
+        db_url = f"sqlite:///{tmp_db}"
     _engine_kwargs = {
         "connect_args": {"check_same_thread": False},
         "poolclass": StaticPool,
