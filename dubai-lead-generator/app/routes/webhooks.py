@@ -71,6 +71,19 @@ async def resend_webhook_handler(request: Request, db: Session = Depends(get_db)
         updates["opened_at"] = datetime.utcnow()
     elif event_type == "email.clicked":
         updates["clicked_at"] = datetime.utcnow()
+    elif event_type in ["email.replied", "email.received", "inbound.email", "email.inbound"]:
+        updates["status"] = "REPLIED"
+        if recipient:
+            biz = db.query(Business).filter(
+                (Business.email.ilike(recipient)) | (Business.decision_maker_email.ilike(recipient))
+            ).first()
+            if biz:
+                biz.crm_status = "REPLIED"
+                biz.contact_status = "replied"
+                biz.sequence_stage = "REPLIED_PAUSED"
+                biz.next_action_due = None
+                db.commit()
+                logger.info(f"Inbound reply event received for '{biz.business_name}' ({recipient}). Sequence PAUSED.")
 
     if email_id and updates:
         log = update_email_log_by_message_id(db, email_id, updates)
@@ -83,12 +96,45 @@ async def resend_webhook_handler(request: Request, db: Session = Depends(get_db)
                 elif updates.get("status") == "DELIVERED":
                     biz.crm_status = "DELIVERED"
                     biz.contact_status = "delivered"
+                elif updates.get("status") == "REPLIED":
+                    biz.crm_status = "REPLIED"
+                    biz.contact_status = "replied"
+                    biz.sequence_stage = "REPLIED_PAUSED"
+                    biz.next_action_due = None
                 db.commit()
 
     event.processed = True
     db.commit()
 
     return {"status": "processed", "event_id": event_id, "type": event_type}
+
+
+@router.post("/webhooks/inbound-reply")
+def inbound_reply_handler(payload: Dict[str, Any], db: Session = Depends(get_db)):
+    """
+    Handle inbound email reply webhook / notification.
+    Immediately pauses automated drip follow-up sequence for the matching business.
+    """
+    from_email = payload.get("from_email") or payload.get("sender") or payload.get("from")
+    if not from_email or "@" not in str(from_email):
+        raise HTTPException(status_code=400, detail="Valid sender email required.")
+
+    clean_email = str(from_email).strip().lower()
+    biz = db.query(Business).filter(
+        (Business.email.ilike(clean_email)) | (Business.decision_maker_email.ilike(clean_email))
+    ).first()
+
+    if not biz:
+        return {"status": "not_found", "message": f"No business matching email '{clean_email}'"}
+
+    biz.crm_status = "REPLIED"
+    biz.contact_status = "replied"
+    biz.sequence_stage = "REPLIED_PAUSED"
+    biz.next_action_due = None
+    db.commit()
+
+    logger.info(f"Inbound reply recorded for '{biz.business_name}' ({clean_email}). Drip sequence PAUSED.")
+    return {"status": "paused", "business_id": biz.id, "business_name": biz.business_name}
 
 
 @router.get("/outreach/unsubscribe")

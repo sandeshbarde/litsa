@@ -48,6 +48,7 @@ def get_businesses(
     is_dealer_or_wholesale: Optional[bool] = None,
     lead_priority: Optional[str] = None,
     website_status: Optional[str] = None,
+    contact_status: Optional[str] = None,
     contacted: Optional[bool] = None,
     min_score: Optional[int] = None,
 ) -> List[Business]:
@@ -66,6 +67,8 @@ def get_businesses(
         q = q.filter(Business.lead_priority == lead_priority)
     if website_status:
         q = q.filter(Business.website_status == website_status)
+    if contact_status:
+        q = q.filter(Business.contact_status == contact_status)
     if contacted is not None:
         q = q.filter(Business.contacted == contacted)
     if min_score is not None:
@@ -321,6 +324,19 @@ def get_dashboard_stats(db: Session) -> Dict[str, Any]:
     total_calls = sum(r["call_count"] for r in today_api)
     total_errors = sum(r["error_count"] for r in today_api)
 
+    # Email Outreach Analytics
+    sent_count = db.query(func.count(EmailLog.id)).filter(EmailLog.status.in_(["SENT", "ACCEPTED", "DELIVERED"])).scalar() or 0
+    open_count = db.query(func.count(EmailLog.id)).filter(EmailLog.opened_at.isnot(None)).scalar() or 0
+    bounce_count = db.query(func.count(EmailLog.id)).filter(EmailLog.status == "BOUNCED").scalar() or 0
+    reply_count = db.query(func.count(Business.id)).filter(Business.contact_status == "replied").scalar() or 0
+    demo_view_count = db.query(func.count(DemoInteraction.id)).scalar() or 0
+    manual_research_needed = db.query(func.count(Business.id)).filter(Business.contact_status == "manual_research_needed").scalar() or 0
+
+    open_rate = round((open_count / sent_count * 100), 1) if sent_count > 0 else 0.0
+    reply_rate = round((reply_count / sent_count * 100), 1) if sent_count > 0 else 0.0
+    demo_view_rate = round((demo_view_count / sent_count * 100), 1) if sent_count > 0 else 0.0
+    bounce_rate = round((bounce_count / sent_count * 100), 1) if sent_count > 0 else 0.0
+
     return {
         "total_businesses": total,
         "no_website": no_website,
@@ -334,6 +350,18 @@ def get_dashboard_stats(db: Session) -> Dict[str, Any]:
         "api_calls_today": total_calls,
         "api_errors_today": total_errors,
         "api_usage_breakdown": today_api,
+        "email_analytics": {
+            "sent_count": sent_count,
+            "open_count": open_count,
+            "open_rate": open_rate,
+            "reply_count": reply_count,
+            "reply_rate": reply_rate,
+            "demo_view_count": demo_view_count,
+            "demo_view_rate": demo_view_rate,
+            "bounce_count": bounce_count,
+            "bounce_rate": bounce_rate,
+            "manual_research_needed": manual_research_needed,
+        },
     }
 
 

@@ -113,6 +113,92 @@ class EmailAutomationService:
             "zerobounce": zb_info,
         }
 
+    def get_daily_email_limit(self) -> int:
+        """Calculate maximum allowed email sends for today according to warmup mode."""
+        if not getattr(settings, "warmup_mode", True):
+            return getattr(settings, "max_emails_per_day", 50)
+
+        start_str = getattr(settings, "warmup_start_date", None)
+        start_date = None
+        if start_str:
+            try:
+                start_date = datetime.strptime(start_str.strip(), "%Y-%m-%d").date()
+            except Exception:
+                pass
+
+        if not start_date:
+            first_log = self.db.query(EmailLog.sent_at).order_by(EmailLog.sent_at.asc()).first()
+            if first_log and first_log[0]:
+                start_date = first_log[0].date()
+            else:
+                start_date = datetime.utcnow().date()
+
+        days = max(0, (datetime.utcnow().date() - start_date).days)
+        warmup_capacity = min(10 + days * 3, 50)
+        max_configured = getattr(settings, "max_emails_per_day", 50)
+        return min(warmup_capacity, max_configured)
+
+    def get_emails_sent_today_count(self) -> int:
+        """Count emails sent today across all channels."""
+        today_start = datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
+        return self.db.query(EmailLog).filter(
+            EmailLog.sent_at >= today_start,
+            EmailLog.status.in_(["SENT", "ACCEPTED", "DELIVERED"])
+        ).count()
+
+    def check_resend_domain_status(self, domain: Optional[str] = None) -> Dict[str, Any]:
+        """Check SPF/DKIM authentication status via Resend API."""
+        resend_key = getattr(settings, "resend_api_key", "")
+        if not resend_key or not resend_key.startswith("re_"):
+            return {
+                "verified": False,
+                "status": "unconfigured",
+                "message": "Resend API key not configured."
+            }
+
+        target_domain = domain
+        if not target_domain:
+            from_addr = getattr(settings, "email_from_address", "")
+            if "@" in from_addr:
+                target_domain = from_addr.split("@")[-1].strip().lower()
+            else:
+                target_domain = "resend.dev"
+
+        try:
+            resp = requests.get(
+                "https://api.resend.com/domains",
+                headers={"Authorization": f"Bearer {resend_key}"},
+                timeout=8,
+            )
+            if resp.status_code == 200:
+                domains_data = resp.json().get("data", [])
+                for d in domains_data:
+                    d_name = d.get("name", "").lower()
+                    if d_name == target_domain or target_domain == "resend.dev":
+                        d_status = (d.get("status") or "").lower()
+                        is_verified = (d_status == "verified" or target_domain == "resend.dev")
+                        if not is_verified:
+                            logger.warning(f"Resend domain warning: Domain '{target_domain}' status is '{d_status}'. High-volume sending blocked.")
+                        return {
+                            "verified": is_verified,
+                            "status": d_status or "verified",
+                            "domain": target_domain,
+                            "details": d,
+                        }
+                logger.warning(f"Resend domain warning: Domain '{target_domain}' not found in registered Resend domains. High-volume sending blocked.")
+                return {
+                    "verified": False,
+                    "status": "not_found",
+                    "domain": target_domain,
+                    "message": f"Domain '{target_domain}' not registered in Resend account.",
+                }
+            else:
+                logger.warning(f"Resend domain API returned HTTP {resp.status_code}: {resp.text}")
+                return {"verified": False, "status": "error", "domain": target_domain, "message": resp.text}
+        except Exception as exc:
+            logger.error(f"Failed to check Resend domain status: {exc}")
+            return {"verified": False, "status": "exception", "domain": target_domain, "error": str(exc)}
+
     def send_single_email(
         self,
         recipient_email: str,
@@ -121,8 +207,8 @@ class EmailAutomationService:
         force_send: bool = False,
     ) -> Dict[str, Any]:
         """
-        Deliver email via Resend API (preferred) or SMTP.
-        Includes automated pre-send ZeroBounce hygiene check.
+        Deliver email via Resend API (Primary Channel) with Gmail SMTP as Emergency Fallback.
+        Enforces Warmup / Daily Email Limit and pre-send ZeroBounce hygiene check.
         """
         if not recipient_email or "@" not in recipient_email:
             return {
@@ -134,6 +220,17 @@ class EmailAutomationService:
         recipient_email = recipient_email.strip()
         domain = recipient_email.split("@")[-1].strip().lower()
 
+        # Warmup / Daily Quota Check
+        sent_today = self.get_emails_sent_today_count()
+        daily_limit = self.get_daily_email_limit()
+        if sent_today >= daily_limit and not force_send:
+            logger.warning(f"Warmup / Daily limit reached: {sent_today}/{daily_limit} emails sent today.")
+            return {
+                "success": False,
+                "method": "warmup_limit",
+                "error": f"Daily email limit reached ({sent_today}/{daily_limit} sent today under warmup mode). Sending paused to protect domain reputation.",
+            }
+
         # 0. Suppression List Check (Compliance & Opt-out safety)
         if is_email_suppressed(self.db, recipient_email):
             logger.warning(f"Suppression shield: Recipient '{recipient_email}' is opted out or suppressed.")
@@ -143,36 +240,35 @@ class EmailAutomationService:
                 "error": f"Recipient '{recipient_email}' is on the suppression list (unsubscribed or previous bounce). Delivery blocked.",
             }
 
-        # Pre-flight DNS Existence Check: Block non-existent domains BEFORE SMTP to avoid Google Mailer-Daemon NXDOMAIN bounce
+        # Pre-flight DNS Existence Check
         import socket
         try:
             socket.getaddrinfo(domain, 25)
         except Exception:
-            logger.warning(f"DNS Guard: Domain '{domain}' does not exist on the internet (NXDOMAIN). Delivery blocked to protect Gmail reputation.")
+            logger.warning(f"DNS Guard: Domain '{domain}' does not exist on the internet (NXDOMAIN). Delivery blocked.")
             return {
                 "success": False,
                 "method": "dns_guard",
-                "error": f"The domain '{domain}' does not exist on the internet (NXDOMAIN). Delivery was blocked to protect your Gmail reputation. Please pitch this business via 1-Click WhatsApp or Phone instead!",
+                "error": f"The domain '{domain}' does not exist on the internet (NXDOMAIN). Delivery was blocked to protect sender reputation.",
             }
 
-        # ZeroBounce email hygiene check (if configured and not force_send)
+        # ZeroBounce email hygiene check
         if zerobounce_service.is_active() and not force_send:
             zb_result = zerobounce_service.validate_email(recipient_email, allow_catch_all=True)
             status_reason = (zb_result.get("status") or "").upper()
             sub_status = zb_result.get("sub_status", "")
-            # Only block confirmed toxic or invalid emails (never UNKNOWN or CATCH_ALL or 0 credits):
             if status_reason in ["INVALID", "SPAMTRAP", "ABUSE", "DO_NOT_MAIL"]:
                 logger.warning(f"ZeroBounce blocked email to {recipient_email}: {status_reason} ({sub_status})")
                 return {
                     "success": False,
                     "method": "zerobounce_shield",
-                    "error": f"ZeroBounce Hygiene Shield: Blocked '{recipient_email}' (Status: {status_reason}, {sub_status}). This address is confirmed invalid or toxic. Skipped to preserve sender reputation.",
+                    "error": f"ZeroBounce Hygiene Shield: Blocked '{recipient_email}' (Status: {status_reason}, {sub_status}). This address is confirmed invalid or toxic.",
                     "zerobounce": zb_result,
                 }
             else:
                 logger.info(f"ZeroBounce hygiene passed for {recipient_email}: status={status_reason} ({sub_status})")
 
-        # Safe Test Mode: Redirect recipient to test mailbox if test mode active
+        # Safe Test Mode
         target_to = recipient_email
         if settings.provider_test_mode:
             test_addr = settings.test_recipient_email or "test-lead@example.com"
@@ -181,7 +277,7 @@ class EmailAutomationService:
 
         from_header = f"{settings.email_from_name or DEVELOPER_NAME} <{settings.email_from_address or 'onboarding@resend.dev'}>"
 
-        # Method 1: Resend API (HTTP, no SMTP blocks, 99.8% deliverability)
+        # PRIMARY CHANNEL: Resend API (HTTP)
         resend_key = getattr(settings, "resend_api_key", "")
         if resend_key and resend_key.startswith("re_"):
             try:
@@ -199,16 +295,14 @@ class EmailAutomationService:
                 resp = requests.post("https://api.resend.com/emails", headers=headers, json=payload, timeout=10)
                 if resp.status_code in [200, 201]:
                     msg_id = resp.json().get("id")
-                    logger.info(f"Email sent via Resend to {recipient_email} (Msg ID: {msg_id})")
+                    logger.info(f"Email sent via Resend API (Primary Channel) to {recipient_email} (Msg ID: {msg_id})")
                     return {"success": True, "method": "resend", "id": msg_id}
                 else:
-                    logger.warning(f"Resend error: {resp.text}")
-                    return {"success": False, "method": "resend", "error": resp.text}
+                    logger.warning(f"Resend Primary Channel error ({resp.status_code}): {resp.text}. Falling back to emergency SMTP...")
             except Exception as e:
-                logger.error(f"Resend exception: {e}")
-                return {"success": False, "method": "resend", "error": str(e)}
+                logger.warning(f"Resend Primary Channel exception: {e}. Falling back to emergency SMTP...")
 
-        # Method 2: Standard SMTP (e.g. Gmail with App Password)
+        # EMERGENCY FALLBACK: Standard SMTP (Gmail App Password)
         smtp_user = settings.smtp_username
         smtp_pass = settings.smtp_password
         if smtp_user and smtp_pass and smtp_user != "YOUR_EMAIL" and smtp_pass not in ["YOUR_APP_PASSWORD", "YOUR_GOOGLE_APP_PASSWORD"]:
@@ -228,21 +322,21 @@ class EmailAutomationService:
                 server.login(smtp_user, smtp_pass)
                 server.sendmail(smtp_user, target_to, msg.as_string())
                 server.quit()
-                logger.info(f"Email sent via SMTP to {recipient_email}")
-                return {"success": True, "method": "smtp"}
+                logger.info(f"Email sent via Emergency SMTP Fallback to {recipient_email}")
+                return {"success": True, "method": "smtp_fallback"}
             except smtplib.SMTPAuthenticationError as auth_err:
                 err_msg = (
-                    "Gmail Authentication Failed. Google requires a 16-character App Password, "
-                    "not your standard Gmail account password. Visit https://myaccount.google.com/apppasswords"
+                    "Emergency SMTP Fallback Failed: Gmail Authentication Error. Google requires a 16-character App Password. "
+                    "Visit https://myaccount.google.com/apppasswords"
                 )
                 logger.error(f"SMTP Auth error to {recipient_email}: {err_msg}")
-                return {"success": False, "method": "smtp", "error": err_msg}
+                return {"success": False, "method": "smtp_fallback", "error": err_msg}
             except Exception as e:
-                logger.error(f"SMTP send failed to {recipient_email}: {e}")
-                return {"success": False, "method": "smtp", "error": str(e)}
+                logger.error(f"Emergency SMTP Fallback failed to {recipient_email}: {e}")
+                return {"success": False, "method": "smtp_fallback", "error": str(e)}
 
-        # Method 3: Credentials Required (Accurate non-fake staging state)
-        logger.info(f"Email queued for {recipient_email} (awaiting SMTP App Password / Resend Key)")
+        # Method 3: Credentials Required
+        logger.info(f"Email queued for {recipient_email} (awaiting Resend API Key / SMTP App Password)")
         return {
             "success": False,
             "method": "credentials_required",
@@ -269,6 +363,12 @@ class EmailAutomationService:
 
         leads = query.all()
         logger.info(f"Autonomous Email Dispatcher started for {len(leads)} leads...")
+
+        # Domain authentication check for high-volume sends
+        domain_check = self.check_resend_domain_status()
+        if not domain_check.get("verified", True) and len(leads) > 5:
+            logger.warning(f"Resend sender domain '{domain_check.get('domain')}' is unverified. High-volume dispatch capped to 5 leads.")
+            leads = leads[:5]
 
         dispatched_count = 0
         failed_count = 0
@@ -495,3 +595,84 @@ class EmailAutomationService:
             "error": send_res.get("error"),
             "message": send_res.get("message") or f"Successfully dispatched to {recipient_email}",
         }
+
+    def process_drip_followups(self, max_leads: int = 50) -> Dict[str, Any]:
+        """
+        Processes multi-step drip sequence follow-ups (Day 0: Pitch, Day 3: Soft, Day 7: Insight, Day 14: Final).
+        Pauses automatically if lead replied, unsubscribed, or bounced.
+        """
+        now = datetime.utcnow()
+        leads = self.db.query(Business).filter(
+            Business.contacted == True,
+            Business.contact_status.not_in(["replied", "unsubscribed", "bounced", "suppressed"]),
+            Business.crm_status.not_in(["REPLIED", "UNSUBSCRIBED", "BOUNCED", "SUPPRESSED"]),
+            Business.sequence_stage.not_in(["FINISHED", "REPLIED_PAUSED"]),
+            (Business.next_action_due <= now) | (Business.next_action_due.is_(None))
+        ).limit(max_leads).all()
+
+        processed_count = 0
+        skipped_count = 0
+        results = []
+
+        for biz in leads:
+            recipient_email = self._get_target_email(biz)
+            if not recipient_email or is_email_suppressed(self.db, recipient_email):
+                skipped_count += 1
+                continue
+
+            current_stage = biz.sequence_stage or "STEP1_SENT"
+            next_step = 2
+            next_delay_days = 4
+            if current_stage == "STEP1_SENT":
+                next_step = 2
+                next_delay_days = 4
+            elif current_stage == "STEP2_SENT":
+                next_step = 3
+                next_delay_days = 7
+            elif current_stage == "STEP3_SENT":
+                next_step = 4
+                next_delay_days = 0
+
+            pitch_data = pitch_generator.generate_ceo_pitch(
+                business_name=biz.business_name,
+                category=biz.category or "Business",
+                city=biz.city or "Dubai",
+                area=biz.area,
+                ceo_name=biz.decision_maker_name,
+                ceo_title=biz.decision_maker_title,
+                loophole_data=biz.loophole_data or {},
+                sequence_step=next_step,
+                language="en",
+                live_demo_url=build_demo_url(biz.id),
+            )
+
+            send_res = self.send_single_email(
+                recipient_email=recipient_email,
+                subject=pitch_data["subject"],
+                body_text=pitch_data["body"],
+            )
+
+            if send_res.get("success"):
+                biz.sequence_stage = f"STEP{next_step}_SENT" if next_step < 4 else "FINISHED"
+                biz.contact_status = f"step{next_step}_sent"
+                if next_step < 4:
+                    biz.next_action_due = now + timedelta(days=next_delay_days)
+                else:
+                    biz.next_action_due = None
+
+                create_email_log(self.db, {
+                    "business_id": biz.id,
+                    "recipient_email": recipient_email,
+                    "subject": pitch_data["subject"],
+                    "provider": send_res.get("method", "resend"),
+                    "provider_message_id": send_res.get("id"),
+                    "status": "ACCEPTED",
+                    "sent_at": now,
+                })
+                self.db.commit()
+                processed_count += 1
+                results.append({"business_id": biz.id, "step": next_step, "status": "sent"})
+            else:
+                results.append({"business_id": biz.id, "step": next_step, "status": "failed", "error": send_res.get("error")})
+
+        return {"processed": processed_count, "skipped": skipped_count, "results": results}

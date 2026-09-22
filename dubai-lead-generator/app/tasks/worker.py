@@ -101,3 +101,20 @@ def verify_lead_email_task(self, lead_id: str) -> Dict[str, Any]:
         return {"status": "failed", "error": str(exc)}
     finally:
         db.close()
+
+
+@celery_app.task(bind=True, name="app.tasks.worker.run_drip_sequence_task")
+def run_drip_sequence_task(self, max_leads: int = 50) -> Dict[str, Any]:
+    """Execute asynchronous drip follow-up sequence task."""
+    logger.info(f"[Celery] Starting drip follow-up sequence task (max={max_leads})")
+    db = SessionLocal()
+    try:
+        auto_svc = EmailAutomationService(db)
+        summary = auto_svc.process_drip_followups(max_leads=max_leads)
+        logger.info(f"[Celery] Drip sequence task complete: {summary}")
+        return {"status": "success", "summary": summary}
+    except Exception as exc:
+        logger.error(f"[Celery] Drip sequence task failed: {exc}")
+        return {"status": "failed", "error": str(exc)}
+    finally:
+        db.close()

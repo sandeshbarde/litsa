@@ -271,6 +271,8 @@ class DiscoveryService:
         data_id = raw.get("data_id")
         phone = raw.get("phone")
 
+        logger.info(f"[STAGE 1: DISCOVERY] Processing business candidate '{name}' in {area} ({city})")
+
         # Dedup check
         is_dup, reason = self.dedup.is_duplicate(
             place_id=place_id,
@@ -280,7 +282,7 @@ class DiscoveryService:
             area=area,
         )
         if is_dup:
-            logger.debug(f"Duplicate: '{name}' ({reason})")
+            logger.debug(f"[STAGE 1: DISCOVERY] Duplicate detected: '{name}' ({reason})")
             return None
 
         # Normalize
@@ -289,7 +291,8 @@ class DiscoveryService:
         address = raw.get("address")
         address_norm = normalize_address(address)
 
-        # Website verification
+        # Stage 2: Website verification
+        logger.info(f"[STAGE 2: VERIFICATION] Verifying web presence for '{name}'...")
         website = raw.get("website")
         use_google_verify = settings.enable_web_verification and not settings.free_mode
         website_status, verified_url, http_code = self.verifier.verify(
@@ -299,14 +302,12 @@ class DiscoveryService:
             google_search_client=self.google_client if use_google_verify else None,
         )
 
-        # STRICT NO-WEBSITE FILTER:
-        # If the business already has a working website, automatically discard it.
-        # We strictly only target businesses that have NO website.
+        # STRICT NO-WEBSITE FILTER
         if website_status == "WEBSITE_WORKING" or (verified_url and website_status not in ["NO_WEBSITE", "WEBSITE_DOWN", "UNREACHABLE", "SOCIAL_ONLY"]):
-            logger.info(f"Strict Filter: Skipping '{name}' - already has active website ({verified_url or website}).")
+            logger.info(f"[STAGE 2: VERIFICATION] Strict Filter: Skipping '{name}' - has working website ({verified_url or website}).")
             return None
 
-        # Social presence (conserved in free_mode)
+        # Social presence
         if not settings.free_mode:
             social_info = self.social.find_social(name, area)
         else:
@@ -335,7 +336,8 @@ class DiscoveryService:
             has_description=has_description,
         )
 
-        # Loophole Research & Company Profiling
+        # Stage 3: Loophole Research & Company Profiling
+        logger.info(f"[STAGE 3: LOOPHOLE PROFILING] Analyzing revenue leak for '{name}'...")
         loophole_info = loophole_service.analyze_company_and_loophole(
             business_name=name,
             category=category,
@@ -361,6 +363,33 @@ class DiscoveryService:
             if gemini_result:
                 website_quality = gemini_result.get("website_quality")
 
+        # Stage 4: Executive Contact Discovery
+        logger.info(f"[STAGE 4: CONTACT DISCOVERY] Finding executive contact for '{name}'...")
+        from app.services.contact_provider import contact_discovery_engine
+        from app.utils.normalization import extract_domain
+
+        extracted_domain = extract_domain(verified_url or website)
+        discovered_contact = contact_discovery_engine.discover_decision_maker(
+            business_name=name,
+            domain=extracted_domain,
+            city=city,
+        )
+
+        email_found = None
+        decision_maker_name = None
+        decision_maker_title = None
+
+        if discovered_contact and discovered_contact.get("email"):
+            email_found = discovered_contact.get("email")
+            decision_maker_name = discovered_contact.get("name")
+            decision_maker_title = discovered_contact.get("title")
+            contact_status_val = "discovered"
+        elif raw.get("email"):
+            email_found = raw.get("email")
+            contact_status_val = "discovered"
+        else:
+            contact_status_val = "manual_research_needed"
+
         # Save to DB
         biz_data = {
             "id": str(uuid.uuid4()),
@@ -378,6 +407,11 @@ class DiscoveryService:
             "address_normalized": address_norm,
             "phone": phone,
             "phone_normalized": phone_norm,
+            "email": email_found,
+            "decision_maker_name": decision_maker_name,
+            "decision_maker_title": decision_maker_title,
+            "decision_maker_email": email_found,
+            "contact_status": contact_status_val,
             "website": website,
             "website_status": website_status,
             "website_url_verified": verified_url,

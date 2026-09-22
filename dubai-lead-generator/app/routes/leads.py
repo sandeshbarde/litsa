@@ -101,11 +101,12 @@ def list_leads(
     lead_priority: Optional[str] = None,
     priority: Optional[str] = None,
     website_status: Optional[str] = None,
+    contact_status: Optional[str] = None,
     contacted: Optional[bool] = None,
     min_score: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """List leads with optional filters including city, B2B wholesale, and priority."""
+    """List leads with optional filters including city, B2B wholesale, contact status, and priority."""
     effective_priority = lead_priority or priority
     businesses = repo.get_businesses(
         db,
@@ -118,6 +119,7 @@ def list_leads(
         is_dealer_or_wholesale=is_dealer_or_wholesale,
         lead_priority=effective_priority,
         website_status=website_status,
+        contact_status=contact_status,
         contacted=contacted,
         min_score=min_score,
     )
@@ -926,11 +928,33 @@ def track_demo_interaction(
         user_agent=user_agent,
         meta_data=payload.meta_data,
     )
+
+    # Check total demo interaction count for 2x+ high intent tracking
+    from app.models import DemoInteraction
+    from loguru import logger
+
+    visit_count = db.query(DemoInteraction).filter(
+        DemoInteraction.business_id == lead_id,
+        DemoInteraction.interaction_type.in_(["pageview", "view", "click"])
+    ).count()
+
+    if visit_count >= 2:
+        business.lead_priority = "HOT"
+        business.lead_score = min(100, (business.lead_score or 50) + 20)
+        business.crm_status = "HIGH_INTENT_DEMO_VISITOR"
+        business.next_action_due = datetime.utcnow()
+        db.commit()
+        logger.warning(
+            f"HIGH INTENT DEMO ALERT: Lead '{business.business_name}' ({lead_id}) has visited demo website {visit_count} times! Priority escalated to HOT."
+        )
+
     return {
         "success": True,
         "interaction_id": interaction.id,
         "interaction_type": interaction.interaction_type,
         "lead_id": lead_id,
+        "visit_count": visit_count,
+        "is_high_intent": visit_count >= 2,
     }
 
 

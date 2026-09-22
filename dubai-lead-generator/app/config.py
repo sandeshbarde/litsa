@@ -44,8 +44,15 @@ class Settings(BaseSettings):
     resend_api_key: Optional[str] = Field(default=None)
     zerobounce_api_key: Optional[str] = Field(default=None)
     apollo_api_key: Optional[str] = Field(default=None)
+    tomba_api_key: Optional[str] = Field(default=None)
+    tomba_secret_key: Optional[str] = Field(default=None)
     anthropic_api_key: Optional[str] = Field(default=None)
     apify_api_token: Optional[str] = Field(default=None)
+
+    # Email Warmup & Daily Limits
+    max_emails_per_day: int = Field(default=50)
+    warmup_mode: bool = Field(default=True)
+    warmup_start_date: Optional[str] = Field(default=None)
 
     # Feature flags
     free_mode: bool = Field(default=True)
