@@ -477,3 +477,88 @@ def record_demo_interaction(
     db.refresh(interaction)
     return interaction
 
+
+# ─────────────────────────────────────────────
+# Data Vault & Full Database Search Repository
+# ─────────────────────────────────────────────
+
+def search_all_businesses(
+    db: Session,
+    query: Optional[str] = None,
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
+    category: Optional[str] = None,
+    lead_priority: Optional[str] = None,
+    has_email: Optional[bool] = None,
+    skip: int = 0,
+    limit: int = 500,
+) -> List[Business]:
+    """Search across all stored business records with optional keyword and attribute filters."""
+    q = db.query(Business)
+    if query and query.strip():
+        term = f"%{query.strip()}%"
+        q = q.filter(
+            or_(
+                Business.business_name.ilike(term),
+                Business.category.ilike(term),
+                Business.city.ilike(term),
+                Business.state.ilike(term),
+                Business.country.ilike(term),
+                Business.area.ilike(term),
+                Business.phone.ilike(term),
+                Business.email.ilike(term),
+                Business.decision_maker_name.ilike(term),
+                Business.loophole_summary.ilike(term),
+            )
+        )
+    if city and city.strip():
+        q = q.filter(or_(Business.city.ilike(f"%{city.strip()}%"), Business.state.ilike(f"%{city.strip()}%"), Business.country.ilike(f"%{city.strip()}%")))
+    if state and state.strip():
+        q = q.filter(Business.state.ilike(f"%{state.strip()}%"))
+    if country and country.strip():
+        q = q.filter(Business.country.ilike(f"%{country.strip()}%"))
+    if category and category.strip():
+        q = q.filter(Business.category.ilike(f"%{category.strip()}%"))
+    if lead_priority and lead_priority.strip():
+        q = q.filter(Business.lead_priority == lead_priority.strip().upper())
+    if has_email is True:
+        q = q.filter(or_(Business.email.isnot(None), Business.decision_maker_email.isnot(None)))
+    elif has_email is False:
+        q = q.filter(and_(Business.email.is_(None), Business.decision_maker_email.is_(None)))
+
+    return q.order_by(Business.lead_score.desc()).offset(skip).limit(limit).all()
+
+
+def get_data_vault_stats(db: Session) -> Dict[str, Any]:
+    """Aggregate breakdown of all stored business data in the database."""
+    total_records = db.query(func.count(Business.id)).scalar() or 0
+    no_website = db.query(func.count(Business.id)).filter(Business.website_status != "WEBSITE_WORKING").scalar() or 0
+    b2b_dealers = db.query(func.count(Business.id)).filter(or_(Business.business_type == "B2B", Business.is_dealer_or_wholesale == True)).scalar() or 0
+    ceos_found = db.query(func.count(Business.id)).filter(or_(Business.decision_maker_name.isnot(None), Business.decision_maker_email.isnot(None))).scalar() or 0
+    contacted = db.query(func.count(Business.id)).filter(Business.contacted == True).scalar() or 0
+
+    city_counts = {}
+    city_rows = db.query(Business.city, func.count(Business.id)).group_by(Business.city).all()
+    for c, cnt in city_rows:
+        if c:
+            city_counts[c] = cnt
+
+    country_counts = {}
+    country_rows = db.query(Business.country, func.count(Business.id)).group_by(Business.country).all()
+    for c, cnt in country_rows:
+        if c:
+            country_counts[c] = cnt
+
+    return {
+        "total_records": total_records,
+        "no_website": no_website,
+        "b2b_dealers": b2b_dealers,
+        "ceos_found": ceos_found,
+        "contacted": contacted,
+        "city_counts": city_counts,
+        "country_counts": country_counts,
+        "calculated_annual_leak": f"${total_records * 45000:,.0f} - ${total_records * 95000:,.0f} / yr" if total_records > 0 else "$0 / yr"
+    }
+
+

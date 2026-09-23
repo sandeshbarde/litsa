@@ -2,12 +2,15 @@
 Lead management endpoints.
 """
 
+import csv
+import io
+import json
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import requests
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, Response
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -1003,6 +1006,141 @@ def submit_demo_inquiry(
         "message": "Inquiry successfully recorded for business demo.",
         "interaction_id": interaction.id,
         "lead_id": lead_id,
+    }
+
+
+# ─────────────────────────────────────────────
+# Stored Data Vault & CSV/JSON Export Endpoints
+# ─────────────────────────────────────────────
+
+@router.get("/export/csv")
+def export_leads_csv(
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
+    category: Optional[str] = None,
+    lead_priority: Optional[str] = None,
+    has_email: Optional[bool] = None,
+    db: Session = Depends(get_db),
+):
+    """Export all or filtered stored business data as a downloadable CSV spreadsheet."""
+    businesses = repo.search_all_businesses(
+        db,
+        city=city,
+        state=state,
+        country=country,
+        category=category,
+        lead_priority=lead_priority,
+        has_email=has_email,
+        limit=10000,
+    )
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "ID", "Business Name", "Category", "City", "State", "Country", "Area", "Phone",
+        "Email", "Decision Maker Name", "Decision Maker Title", "Decision Maker Email",
+        "Business Type", "Is Dealer/Wholesale", "Loophole Summary", "Lead Score",
+        "Lead Priority", "Website Status", "Contacted", "CRM Status", "First Seen"
+    ])
+
+    for b in businesses:
+        writer.writerow([
+            b.id,
+            b.business_name,
+            b.category or "",
+            b.city or "",
+            b.state or "",
+            b.country or "",
+            b.area or "",
+            b.phone or "",
+            b.email or "",
+            b.decision_maker_name or "",
+            b.decision_maker_title or "",
+            b.decision_maker_email or "",
+            b.business_type or "B2B",
+            b.is_dealer_or_wholesale or False,
+            b.loophole_summary or "",
+            b.lead_score or 0,
+            b.lead_priority or "WARM",
+            b.website_status or "",
+            b.contacted or False,
+            b.crm_status or "DISCOVERED",
+            b.first_seen.isoformat() if b.first_seen else ""
+        ])
+
+    csv_data = output.getvalue()
+    filename = f"stored_leads_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.get("/export/json")
+def export_leads_json(
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
+    category: Optional[str] = None,
+    lead_priority: Optional[str] = None,
+    db: Session = Depends(get_db),
+):
+    """Export all stored business records as downloadable JSON."""
+    businesses = repo.search_all_businesses(
+        db,
+        city=city,
+        state=state,
+        country=country,
+        category=category,
+        lead_priority=lead_priority,
+        limit=10000,
+    )
+    data = [b.to_dict() for b in businesses]
+    filename = f"stored_leads_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.json"
+    return Response(
+        content=json.dumps(data, indent=2),
+        media_type="application/json",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@router.get("/data-vault/summary")
+def get_data_vault_summary(db: Session = Depends(get_db)):
+    """Aggregate statistics and metrics for all stored data in the database vault."""
+    return repo.get_data_vault_stats(db)
+
+
+@router.get("/search/all")
+def search_stored_data(
+    q: Optional[str] = None,
+    city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
+    category: Optional[str] = None,
+    lead_priority: Optional[str] = None,
+    has_email: Optional[bool] = None,
+    skip: int = 0,
+    limit: int = 250,
+    db: Session = Depends(get_db),
+):
+    """Search and browse across ALL stored database records with multi-attribute filtering."""
+    businesses = repo.search_all_businesses(
+        db,
+        query=q,
+        city=city,
+        state=state,
+        country=country,
+        category=category,
+        lead_priority=lead_priority,
+        has_email=has_email,
+        skip=skip,
+        limit=limit,
+    )
+    return {
+        "total": len(businesses),
+        "leads": [b.to_dict() for b in businesses],
     }
 
 

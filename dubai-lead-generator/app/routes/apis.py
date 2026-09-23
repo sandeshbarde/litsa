@@ -171,7 +171,10 @@ def list_all_apis():
             {"path": "/leads/{id}/send-email", "method": "POST", "summary": "Dispatch email directly to CEO"},
             {"path": "/leads/{id}/website-preview", "method": "GET", "summary": "Generate live personal prototype website mockup"},
             {"path": "/leads/{id}/loophole-research", "method": "GET", "summary": "Generate forensic loophole dossier"},
-            {"path": "/leads/automation/dispatch-all", "method": "POST", "summary": "100% Hands-free Autopilot CEO outreach dispatcher"},
+            {"path": "/leads/export/csv", "method": "GET", "summary": "Export all or filtered stored business data as downloadable CSV spreadsheet"},
+            {"path": "/leads/export/json", "method": "GET", "summary": "Export stored business records as downloadable JSON payload"},
+            {"path": "/leads/data-vault/summary", "method": "GET", "summary": "Get aggregate analytics & revenue leak metrics across all stored data"},
+            {"path": "/leads/search/all", "method": "GET", "summary": "Search across ALL stored database records with multi-attribute filtering"},
             {"path": "/location/resolve", "method": "GET", "summary": "Resolve any city, state, or country worldwide into full metadata"},
             {"path": "/location/presets", "method": "GET", "summary": "List categorized world location presets (India, Middle East, USA, UK)"},
             {"path": "/apis/list", "method": "GET", "summary": "List all integrated APIs and internal endpoints"}

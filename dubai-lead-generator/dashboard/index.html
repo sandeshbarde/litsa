@@ -151,9 +151,6 @@
                             <option value="Jaipur">🇮🇳 Jaipur, Rajasthan (City)</option>
                             <option value="Kolkata">🇮🇳 Kolkata, West Bengal (City)</option>
                             <option value="Chennai">🇮🇳 Chennai, Tamil Nadu (City)</option>
-                            <option value="Karnataka">🏛️ Karnataka (State, India)</option>
-                            <option value="Telangana">🏛️ Telangana (State, India)</option>
-                            <option value="Tamil Nadu">🏛️ Tamil Nadu (State, India)</option>
 
                             <!-- MIDDLE EAST -->
                             <option value="Dubai">🇦🇪 Dubai, UAE (City)</option>
@@ -161,7 +158,6 @@
                             <option value="Sharjah">🇦🇪 Sharjah, UAE (City)</option>
                             <option value="Riyadh">🇸🇦 Riyadh, Saudi Arabia (City)</option>
                             <option value="Doha">🇶🇦 Doha, Qatar (City)</option>
-                            <option value="United Arab Emirates">🇦🇪 UAE (Country)</option>
 
                             <!-- NORTH AMERICA & EUROPE -->
                             <option value="New York">🇺🇸 New York, NY (City)</option>
@@ -171,12 +167,6 @@
                             <option value="United States">🇺🇸 United States (Country)</option>
                             <option value="London">🇬🇧 London, United Kingdom (City)</option>
                             <option value="United Kingdom">🇬🇧 United Kingdom (Country)</option>
-                            <option value="Toronto">🇨🇦 Toronto, Ontario (City)</option>
-                            <option value="Sydney">🇦🇺 Sydney, NSW (City)</option>
-                            <option value="Tokyo">🇯🇵 Tokyo, Japan (City)</option>
-                            <option value="Singapore">🇸🇬 Singapore (Country)</option>
-                            <option value="Berlin">🇩🇪 Berlin, Germany (City)</option>
-                            <option value="Paris">🇫🇷 Paris, France (City)</option>
                         </datalist>
                         <button onclick="triggerCitySearch()" title="Search leads for this location" class="ml-2 px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shadow glow-brand transition-all flex items-center gap-1">
                             <span>🔍 Search</span>
@@ -205,8 +195,12 @@
                 <button id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all">
                     ⚙️ Search & Control Panel
                 </button>
+                <button id="tab-vault" onclick="switchTab('vault')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all flex items-center gap-1.5">
+                    <span>🗄️ All Stored Data Vault</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">CSV Export</span>
+                </button>
                 <button id="tab-apis" onclick="switchTab('apis')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all flex items-center gap-1.5">
-                    <span>🔌 API List & Explorer</span>
+                    <span>🔌 API Explorer</span>
                     <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">10 APIs</span>
                 </button>
             </div>
@@ -316,6 +310,110 @@
                         <span id="current-page-num" class="font-bold text-white px-2">1</span>
                         <button onclick="changePage(1)" id="btn-next-page" class="px-3 py-1 rounded bg-dark-bg border border-dark-border hover:bg-dark-hover text-slate-300 disabled:opacity-40">Next</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW TAB: ALL STORED DATA VAULT & CSV EXPORT -->
+        <div id="content-vault" class="tab-content hidden space-y-6">
+            <!-- Header Banner & Export Action Toolbar -->
+            <div class="bg-gradient-to-r from-emerald-950 via-teal-950 to-slate-900 border border-emerald-500/40 rounded-xl p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4 glow-emerald">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg font-black text-white">🗄️ Database Stored Data Vault</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">FULL ACCESS</span>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Find, search, filter, and export ALL stored business leads across Pune, Bombay, Maharashtra, Gujarat, Dubai, USA, UK, and worldwide.
+                    </p>
+                </div>
+                <div class="flex items-center flex-wrap gap-2.5">
+                    <button onclick="exportDataCSV()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow glow-emerald transition-all flex items-center gap-1.5">
+                        <span>📥 Export All Data (CSV)</span>
+                    </button>
+                    <button onclick="exportDataJSON()" class="px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-dark-border text-xs font-semibold transition-all flex items-center gap-1.5">
+                        <span>📥 Export JSON</span>
+                    </button>
+                    <button onclick="loadDataVault()" class="px-3 py-2 rounded-lg bg-dark-bg hover:bg-slate-800 text-slate-300 border border-dark-border text-xs font-semibold">
+                        🔄 Refresh Vault
+                    </button>
+                </div>
+            </div>
+
+            <!-- Vault Aggregate Metrics Cards -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
+                <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-slate-400 block">Total Stored Records</span>
+                    <strong id="vault-stat-total" class="text-2xl font-black text-white block mt-1">0</strong>
+                    <span class="text-[10px] text-emerald-400 mt-0.5 block">Stored in SQLite / PostgreSQL</span>
+                </div>
+                <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-rose-400 block">Strict No Website</span>
+                    <strong id="vault-stat-no-web" class="text-2xl font-black text-rose-400 block mt-1">0</strong>
+                    <span class="text-[10px] text-slate-400 mt-0.5 block">100% Personal website candidates</span>
+                </div>
+                <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-purple-400 block">CEOs & Executive Emails</span>
+                    <strong id="vault-stat-ceos" class="text-2xl font-black text-purple-400 block mt-1">0</strong>
+                    <span class="text-[10px] text-purple-300 mt-0.5 block">Discovered via Snov/Apollo</span>
+                </div>
+                <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 block">Calculated Revenue Leak</span>
+                    <strong id="vault-stat-leak" class="text-base font-black text-amber-300 block mt-2">$0 / yr</strong>
+                    <span class="text-[10px] text-slate-400 mt-0.5 block">Sum across all stored records</span>
+                </div>
+            </div>
+
+            <!-- Vault Search & Filter Bar -->
+            <div class="bg-dark-card rounded-xl border border-dark-border p-4 shadow-lg flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2 flex-grow max-w-lg">
+                    <span class="text-slate-400">🔍</span>
+                    <input type="text" id="vault-search-input" oninput="filterVaultData()" placeholder="Find stored record by company name, category, phone, email, CEO, area, city, state, country..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500">
+                </div>
+
+                <div class="flex items-center flex-wrap gap-2">
+                    <select id="vault-filter-email" onchange="filterVaultData()" class="bg-dark-bg border border-dark-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                        <option value="ALL">All Email Statuses</option>
+                        <option value="HAS_EMAIL">Email Discovered Only</option>
+                        <option value="NO_EMAIL">Missing Email</option>
+                    </select>
+
+                    <select id="vault-filter-priority" onchange="filterVaultData()" class="bg-dark-bg border border-dark-border rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none">
+                        <option value="ALL">All Lead Priorities</option>
+                        <option value="HOT">🔥 HOT Priority</option>
+                        <option value="WARM">⚡ WARM Priority</option>
+                        <option value="LOW">LOW Priority</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Vault Stored Records Table -->
+            <div class="bg-dark-card rounded-xl border border-dark-border shadow-xl overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-900 border-b border-dark-border text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                <th class="py-3 px-4">Company Name & Location</th>
+                                <th class="py-3 px-3">Category</th>
+                                <th class="py-3 px-4">Executive Contact & Phone</th>
+                                <th class="py-3 px-4">Loophole & Revenue Leak</th>
+                                <th class="py-3 px-3">Score</th>
+                                <th class="py-3 px-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="vault-tbody" class="divide-y divide-dark-border font-normal">
+                            <tr>
+                                <td colspan="6" class="text-center py-12 text-slate-500">
+                                    <div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                                    <p>Loading database vault records...</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="px-4 py-3 bg-slate-900/50 border-t border-dark-border flex justify-between items-center text-xs text-slate-400">
+                    <div>Showing <span id="vault-showing-count" class="font-bold text-white">0</span> stored database records</div>
+                    <button onclick="exportDataCSV()" class="text-emerald-400 hover:text-emerald-300 font-bold underline">📥 Download complete CSV spreadsheet</button>
                 </div>
             </div>
         </div>
@@ -473,7 +571,7 @@
                         <h3 class="text-sm font-bold text-white flex items-center gap-2">
                             <span>⚡ FastAPI Backend System Routes</span>
                         </h3>
-                        <p class="text-xs text-slate-400">Available REST endpoints for lead discovery, scoring, outreach, and location resolution</p>
+                        <p class="text-xs text-slate-400">Available REST endpoints for lead discovery, scoring, outreach, export, and location resolution</p>
                     </div>
                     <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 border border-dark-border text-xs font-bold transition-all flex items-center gap-1">
                         <span>📖 OpenAPI / Swagger Docs →</span>
@@ -1039,6 +1137,8 @@
         let currentApiCategory = 'ALL';
         let allLeads = [];
         let filteredLeads = [];
+        let vaultLeads = [];
+        let filteredVaultLeads = [];
         let apiCatalogData = null;
         let currentPage = 1;
         const pageSize = 12;
@@ -1070,6 +1170,8 @@
 
             if (tab === 'leads') {
                 loadLeads();
+            } else if (tab === 'vault') {
+                loadDataVault();
             } else if (tab === 'apis') {
                 loadApiCatalog();
             }
@@ -1314,6 +1416,122 @@
             renderLeadsTable();
         }
 
+        // --- STORED DATA VAULT & EXPORT LOGIC ---
+        async function loadDataVault() {
+            const tbody = document.getElementById('vault-tbody');
+            tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><div class="inline-block w-6 h-6 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-2"></div><p>Loading database vault records...</p></td></tr>`;
+
+            try {
+                // Fetch Data Vault Summary Metrics
+                const summaryRes = await fetch(`${window.API_BASE}/leads/data-vault/summary`);
+                const summary = await summaryRes.json();
+
+                document.getElementById('vault-stat-total').textContent = summary.total_records || 0;
+                document.getElementById('vault-stat-no-web').textContent = summary.no_website || 0;
+                document.getElementById('vault-stat-ceos').textContent = summary.ceos_found || 0;
+                document.getElementById('vault-stat-leak').textContent = summary.calculated_annual_leak || "$0 / yr";
+
+                // Fetch All Stored Records
+                const dataRes = await fetch(`${window.API_BASE}/leads/search/all?limit=1000`);
+                const data = await dataRes.json();
+                vaultLeads = data.leads || [];
+                filteredVaultLeads = vaultLeads;
+
+                renderVaultTable();
+            } catch (err) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-8 text-rose-400">Failed to load database vault records: ${err.message}</td></tr>`;
+            }
+        }
+
+        function filterVaultData() {
+            const query = (document.getElementById('vault-search-input').value || '').toLowerCase().trim();
+            const emailFilter = document.getElementById('vault-filter-email').value;
+            const priorityFilter = document.getElementById('vault-filter-priority').value;
+
+            filteredVaultLeads = vaultLeads.filter(lead => {
+                if (emailFilter === 'HAS_EMAIL' && !lead.email && !lead.decision_maker_email) return false;
+                if (emailFilter === 'NO_EMAIL' && (lead.email || lead.decision_maker_email)) return false;
+                if (priorityFilter !== 'ALL' && lead.lead_priority !== priorityFilter) return false;
+
+                if (query) {
+                    const text = `${lead.business_name} ${lead.category || ''} ${lead.city || ''} ${lead.state || ''} ${lead.country || ''} ${lead.area || ''} ${lead.phone || ''} ${lead.email || ''} ${lead.decision_maker_name || ''} ${lead.loophole_summary || ''}`.toLowerCase();
+                    if (!text.includes(query)) return false;
+                }
+                return true;
+            });
+
+            renderVaultTable();
+        }
+
+        function renderVaultTable() {
+            const tbody = document.getElementById('vault-tbody');
+            document.getElementById('vault-showing-count').textContent = filteredVaultLeads.length;
+
+            if (!filteredVaultLeads.length) {
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><p class="text-base mb-1">No stored database records match this query.</p><p class="text-xs">Try clearing your search query or launch a new discovery run.</p></td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filteredVaultLeads.map(lead => {
+                const emailToDisplay = lead.decision_maker_email || lead.email;
+                const contactDisplay = emailToDisplay
+                    ? `<div class="font-mono text-emerald-400 font-semibold truncate max-w-[170px]">✉️ ${escapeHtml(emailToDisplay)}</div>`
+                    : `<span class="text-slate-500 italic text-[11px]">No Email Stored</span>`;
+
+                const phoneDisplay = lead.phone ? `<div class="text-slate-300 font-mono text-[11px]">📞 ${escapeHtml(lead.phone)}</div>` : '';
+
+                const priorityBadge = lead.lead_priority === 'HOT'
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-rose-500/20 text-rose-400 border border-rose-500/30">🔥 HOT (${lead.lead_score})</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">⚡ WARM (${lead.lead_score})</span>`;
+
+                const locationTag = lead.state ? `📍 ${escapeHtml(lead.city)}, ${escapeHtml(lead.state)} (${escapeHtml(lead.country || 'India')})` : `📍 ${escapeHtml(lead.city || 'Dubai')} (${escapeHtml(lead.country || 'India')})`;
+
+                return `
+                <tr class="hover:bg-dark-hover/60 transition-colors">
+                    <td class="py-3 px-4">
+                        <div class="font-bold text-white text-xs">${escapeHtml(lead.business_name)}</div>
+                        <div class="text-[11px] text-slate-400 mt-0.5">${locationTag}</div>
+                    </td>
+                    <td class="py-3 px-3">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-semibold bg-dark-bg text-slate-300 border border-dark-border">${escapeHtml(lead.category || 'B2B')}</span>
+                    </td>
+                    <td class="py-3 px-4">
+                        <div class="space-y-0.5">
+                            <span class="font-bold text-white block">${escapeHtml(lead.decision_maker_name || 'Leadership Desk')}</span>
+                            ${contactDisplay}
+                            ${phoneDisplay}
+                        </div>
+                    </td>
+                    <td class="py-3 px-4">
+                        <span class="text-rose-400 text-[11px] font-semibold block">⚠️ ${escapeHtml(lead.loophole_summary || 'Missing Website Portal')}</span>
+                        <span class="text-amber-400 font-mono text-[10px] block mt-0.5">💸 Est Leak: $45k-$95k/yr</span>
+                    </td>
+                    <td class="py-3 px-3">${priorityBadge}</td>
+                    <td class="py-3 px-4 text-right">
+                        <div class="flex items-center justify-end gap-1.5">
+                            <button onclick="autoSendSingleLead('${lead.id}')" title="Send CEO Pitch" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow">
+                                ⚡ Send
+                            </button>
+                            <a href="/demo/${lead.id}" target="_blank" title="Live Website Demo" class="px-2 py-1 rounded bg-purple-950/60 hover:bg-purple-900 border border-purple-500/40 text-purple-300 font-bold text-xs">
+                                🌐 Demo
+                            </a>
+                            <button onclick="openPitchStudio('${lead.id}')" class="px-2 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs">
+                                Pitch
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+
+        function exportDataCSV() {
+            window.open(`${window.API_BASE}/leads/export/csv`, '_blank');
+        }
+
+        function exportDataJSON() {
+            window.open(`${window.API_BASE}/leads/export/json`, '_blank');
+        }
+
         // --- API Catalog Loader & Category Filter ---
         async function loadApiCatalog() {
             const grid = document.getElementById('api-cards-grid');
@@ -1442,7 +1660,7 @@
 
         // Open Pitch Studio Modal
         async function openPitchStudio(leadId) {
-            activeLead = allLeads.find(l => l.id === leadId);
+            activeLead = allLeads.find(l => l.id === leadId) || vaultLeads.find(l => l.id === leadId);
             if (!activeLead) return;
 
             document.getElementById('modal-pitch-subtitle').textContent = `Targeting CEO / Owner of ${activeLead.business_name} (${activeLead.area || activeLead.city || 'Pune'})`;
@@ -1573,7 +1791,7 @@
         }
 
         async function openDossier(leadId) {
-            const lead = allLeads.find(l => l.id === leadId);
+            const lead = allLeads.find(l => l.id === leadId) || vaultLeads.find(l => l.id === leadId);
             if (!lead) return;
 
             try {
