@@ -80,52 +80,49 @@ class DiscoveryService:
         city: str = "Dubai",
         country: str = "United Arab Emirates",
     ) -> List[Dict[str, str]]:
-        """Generate area × category query combinations for any city worldwide, including India."""
+        """Generate area × category query combinations for any city, state, or country worldwide."""
         categories = categories or yaml_config.categories
 
-        city_clean = city.strip()
-        is_dubai = "dubai" in city_clean.lower()
+        loc_meta = get_location_meta(city, fallback_country=country)
+        effective_city = loc_meta.city
+        effective_state = loc_meta.state or ""
+        effective_country = loc_meta.country
 
-        # Popular Indian cities set for smart country inference
-        indian_cities = {
-            "mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "ahmedabad",
-            "chennai", "kolkata", "surat", "jaipur", "lucknow", "kanpur", "nagpur", "indore",
-            "thane", "bhopal", "visakhapatnam", "patna", "vadodara", "ghaziabad", "ludhiana",
-            "agra", "nashik", "faridabad", "meerut", "rajkot", "varanasi", "srinagar", "aurangabad",
-            "dhanbad", "amritsar", "navi mumbai", "allahabad", "prayagraj", "ranchi", "howrah",
-            "coimbatore", "jabalpur", "gwalior", "vijayawada", "jodhpur", "madurai", "raipur",
-            "kota", "chandigarh", "guwahati", "solapur", "hubli", "mysore", "tiruchirappalli",
-            "noida", "gurgaon", "gurugram", "dehradun", "kochi", "cochin", "udaipur", "satara",
-            "kolhapur", "sangli", "jalgaon", "amravati", "akola", "nanded", "latur", "dhule"
-        }
-
-        if not is_dubai and (city_clean.lower() in indian_cities or country.lower() == "india"):
-            country = "India"
-
-        # Do NOT force Dubai areas on non-Dubai cities!
-        if not is_dubai and not areas:
-            effective_areas = [city_clean]
+        # Determine effective areas
+        clean_areas = [a.strip() for a in (areas or []) if a and a.strip()]
+        if not clean_areas:
+            if loc_meta.suggested_areas:
+                effective_areas = loc_meta.suggested_areas
+            else:
+                effective_areas = [effective_city]
         else:
-            effective_areas = areas or yaml_config.areas
+            effective_areas = clean_areas
 
         queries = []
         for area in effective_areas:
             for cat in categories:
-                if area == city_clean or not area or area.lower() == "all" or area.lower() == city_clean.lower():
-                    query = f"{cat} in {city_clean} {country}".strip()
+                if area == effective_city or not area or area.lower() in ["all", effective_city.lower(), effective_country.lower()]:
+                    if effective_state and effective_state != effective_city:
+                        query = f"{cat} in {effective_city}, {effective_state}, {effective_country}".strip()
+                    else:
+                        query = f"{cat} in {effective_city}, {effective_country}".strip()
                     assigned_area = ""
                 else:
-                    query = f"{cat} in {area} {city_clean}".strip()
+                    if effective_state and effective_state != effective_city:
+                        query = f"{cat} in {area}, {effective_city}, {effective_state}".strip()
+                    else:
+                        query = f"{cat} in {area}, {effective_city}".strip()
                     assigned_area = area
 
                 queries.append({
                     "area": assigned_area,
                     "category": cat,
-                    "city": city_clean,
-                    "country": country,
+                    "city": effective_city,
+                    "state": effective_state,
+                    "country": effective_country,
                     "query": query
                 })
-        logger.info(f"Generated {len(queries)} search queries for {city_clean}, {country}.")
+        logger.info(f"Generated {len(queries)} search queries for {effective_city} ({effective_country}).")
         return queries
 
     def start_run(
@@ -390,6 +387,8 @@ class DiscoveryService:
         else:
             contact_status_val = "manual_research_needed"
 
+        loc_meta = get_location_meta(city, fallback_country=country)
+
         # Save to DB
         biz_data = {
             "id": str(uuid.uuid4()),
@@ -398,8 +397,9 @@ class DiscoveryService:
             "business_name": name,
             "business_name_normalized": name_norm,
             "category": category,
-            "city": city,
-            "country": country,
+            "city": loc_meta.city,
+            "state": loc_meta.state or "",
+            "country": loc_meta.country,
             "business_type": loophole_info.get("business_type", "B2B"),
             "is_dealer_or_wholesale": loophole_info.get("is_dealer_or_wholesale", False),
             "area": area,

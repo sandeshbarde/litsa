@@ -42,6 +42,8 @@ def get_businesses(
     skip: int = 0,
     limit: int = 100,
     city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
     area: Optional[str] = None,
     category: Optional[str] = None,
     business_type: Optional[str] = None,
@@ -54,7 +56,11 @@ def get_businesses(
 ) -> List[Business]:
     q = db.query(Business)
     if city and city.strip():
-        q = q.filter(Business.city.ilike(f"%{city.strip()}%"))
+        q = q.filter(or_(Business.city.ilike(f"%{city.strip()}%"), Business.state.ilike(f"%{city.strip()}%"), Business.country.ilike(f"%{city.strip()}%")))
+    if state and state.strip():
+        q = q.filter(Business.state.ilike(f"%{state.strip()}%"))
+    if country and country.strip():
+        q = q.filter(Business.country.ilike(f"%{country.strip()}%"))
     if area and area.strip():
         q = q.filter(Business.area.ilike(f"%{area.strip()}%"))
     if category and category.strip():
@@ -79,6 +85,8 @@ def get_businesses(
 def count_businesses(
     db: Session,
     city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
     area: Optional[str] = None,
     category: Optional[str] = None,
     business_type: Optional[str] = None,
@@ -92,7 +100,11 @@ def count_businesses(
 ) -> int:
     q = db.query(func.count(Business.id))
     if city and city.strip():
-        q = q.filter(Business.city.ilike(f"%{city.strip()}%"))
+        q = q.filter(or_(Business.city.ilike(f"%{city.strip()}%"), Business.state.ilike(f"%{city.strip()}%"), Business.country.ilike(f"%{city.strip()}%")))
+    if state and state.strip():
+        q = q.filter(Business.state.ilike(f"%{state.strip()}%"))
+    if country and country.strip():
+        q = q.filter(Business.country.ilike(f"%{country.strip()}%"))
     if area and area.strip():
         q = q.filter(Business.area.ilike(f"%{area.strip()}%"))
     if category and category.strip():

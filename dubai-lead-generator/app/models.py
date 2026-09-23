@@ -88,6 +88,7 @@ class Business(Base):
 
     # Global location
     city = Column(String, default="Dubai")
+    state = Column(String, nullable=True)
     country = Column(String, default="United Arab Emirates")
 
     # Business classification
@@ -141,6 +142,7 @@ class Business(Base):
             "business_name": self.business_name,
             "category": self.category,
             "city": self.city or "Dubai",
+            "state": self.state or "",
             "country": self.country or "United Arab Emirates",
             "business_type": self.business_type or "B2B",
             "is_dealer_or_wholesale": self.is_dealer_or_wholesale or False,

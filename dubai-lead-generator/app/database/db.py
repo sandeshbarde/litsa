@@ -57,8 +57,17 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def init_db() -> None:
-    """Create all tables if they do not exist."""
+    """Create all tables if they do not exist and ensure missing columns exist."""
     Base.metadata.create_all(bind=engine)
+    # Ensure state column exists on businesses table for existing DBs
+    with engine.connect() as conn:
+        try:
+            from sqlalchemy import text
+            conn.execute(text("ALTER TABLE businesses ADD COLUMN state VARCHAR"))
+            conn.commit()
+            logger.info("Added missing 'state' column to businesses table.")
+        except Exception:
+            pass
     logger.info("Database initialized.")
 
 

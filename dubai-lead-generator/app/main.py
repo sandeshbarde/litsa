@@ -20,6 +20,7 @@ from app.routes.leads import router as leads_router
 from app.routes.sync import router as sync_router
 from app.routes.auth import router as auth_router
 from app.routes.webhooks import router as webhooks_router
+from app.routes.apis import router as apis_router
 from app.config import settings, yaml_config
 from app.utils.logger import setup_logger
 
@@ -135,6 +136,7 @@ app.include_router(leads_router)
 app.include_router(sync_router)
 app.include_router(auth_router)
 app.include_router(webhooks_router)
+app.include_router(apis_router)
 
 dashboard_dir = Path(__file__).resolve().parent.parent / "dashboard"
 if dashboard_dir.exists():

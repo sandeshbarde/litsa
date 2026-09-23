@@ -45,6 +45,9 @@
         .glow-brand {
             box-shadow: 0 0 20px -5px rgba(99, 102, 241, 0.35);
         }
+        .glow-emerald {
+            box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.35);
+        }
         .glow-red {
             box-shadow: 0 0 15px -3px rgba(239, 68, 68, 0.25);
         }
@@ -80,21 +83,21 @@
 </head>
 <body class="min-h-screen flex flex-col font-sans selection:bg-indigo-600 selection:text-white">
 
-    <!-- Top Announcement / Filter Bar -->
+    <!-- Top Announcement & Status Bar -->
     <div class="bg-gradient-to-r from-indigo-950 via-slate-900 to-indigo-950 border-b border-indigo-900/40 px-4 py-2 text-xs flex flex-wrap items-center justify-between gap-2">
         <div class="flex items-center gap-2">
             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> STRICT NO-WEBSITE FILTER ACTIVE
             </span>
-            <span class="text-slate-400">100% of discovered businesses have NO active website. Prime targets for custom personal website design.</span>
+            <span class="text-slate-400 hidden sm:inline">100% of discovered businesses have NO active website. Prime targets for custom personal website design.</span>
         </div>
         <div class="flex items-center gap-3">
             <button onclick="purgeWebsites()" class="text-rose-400 hover:text-rose-300 font-medium transition-colors flex items-center gap-1">
-                <span>🧹 Purge Any Existing Websites</span>
+                <span>🧹 Purge Existing Websites</span>
             </button>
             <span class="text-slate-600">|</span>
             <button onclick="openModal('modal-api-keys')" class="text-indigo-300 hover:text-white font-medium transition-colors flex items-center gap-1">
-                <span>🔑 API Setup & Recommendations</span>
+                <span>🔑 API Setup</span>
             </button>
         </div>
     </div>
@@ -102,7 +105,7 @@
     <!-- Main Navigation -->
     <nav class="bg-dark-card/90 backdrop-blur-md border-b border-dark-border sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-16 items-center">
+            <div class="flex flex-wrap justify-between h-auto sm:h-16 items-center py-2 sm:py-0 gap-3">
                 <!-- Logo & Brand -->
                 <div class="flex items-center gap-3">
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-600 to-pink-500 flex items-center justify-center font-bold text-white shadow-lg glow-brand text-lg">
@@ -111,41 +114,71 @@
                     <div>
                         <div class="flex items-center gap-2">
                             <span class="font-extrabold text-base tracking-tight text-white">GLOBAL B2B <span class="text-indigo-400">LEAD ENGINE</span></span>
-                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">CEO Target</span>
+                            <span class="text-[10px] font-bold px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 uppercase tracking-widest">WORLDWIDE v2.0</span>
                         </div>
-                        <p class="text-[11px] text-slate-400">Company Research • Loophole Analysis • Auto-Typer Pitch</p>
+                        <p class="text-[11px] text-slate-400">Pune • Bombay • Maharashtra • Gujarat • UAE • USA • UK • Global</p>
                     </div>
                 </div>
 
-                <!-- Global & All-India City Switcher -->
-                <div class="flex items-center gap-3">
+                <!-- Worldwide Location Switcher & Presets -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Quick Location Preset Pills -->
+                    <div class="hidden lg:flex items-center gap-1 bg-dark-bg/80 border border-dark-border/80 rounded-lg p-1 text-[11px]">
+                        <button onclick="setQuickLocation('Pune')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🇮🇳 Pune</button>
+                        <button onclick="setQuickLocation('Mumbai')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🇮🇳 Bombay</button>
+                        <button onclick="setQuickLocation('Maharashtra')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🏛️ Maharashtra</button>
+                        <button onclick="setQuickLocation('Gujarat')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🏛️ Gujarat</button>
+                        <button onclick="setQuickLocation('India')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🇮🇳 India</button>
+                        <button onclick="setQuickLocation('Dubai')" class="px-2 py-0.5 rounded hover:bg-indigo-600/30 text-slate-300 hover:text-white font-semibold transition-all">🇦🇪 Dubai</button>
+                    </div>
+
+                    <!-- Location Input with Auto-Resolution -->
                     <div class="flex items-center bg-dark-bg border border-indigo-500/40 rounded-lg px-2.5 py-1.5 focus-within:border-indigo-400">
-                        <span class="text-slate-400 text-xs mr-2">📍 Target City:</span>
-                        <input list="city-suggestions" id="global-city-input" value="Dubai" onchange="onCityInputChange(this.value)" placeholder="Type any city (e.g. Pune, Mumbai, Delhi)..." class="bg-transparent text-xs font-bold text-white w-44 sm:w-52 focus:outline-none placeholder-slate-500">
-                        <datalist id="city-suggestions">
-                            <option value="Dubai">🇦🇪 Dubai, UAE</option>
-                            <option value="Mumbai">🇮🇳 Mumbai, Maharashtra</option>
-                            <option value="Pune">🇮🇳 Pune, Maharashtra</option>
-                            <option value="Delhi">🇮🇳 Delhi, NCR</option>
-                            <option value="Bangalore">🇮🇳 Bangalore / Bengaluru, Karnataka</option>
-                            <option value="Hyderabad">🇮🇳 Hyderabad, Telangana</option>
-                            <option value="Ahmedabad">🇮🇳 Ahmedabad, Gujarat</option>
-                            <option value="Surat">🇮🇳 Surat, Gujarat</option>
-                            <option value="Chennai">🇮🇳 Chennai, Tamil Nadu</option>
-                            <option value="Kolkata">🇮🇳 Kolkata, West Bengal</option>
-                            <option value="Jaipur">🇮🇳 Jaipur, Rajasthan</option>
-                            <option value="Nagpur">🇮🇳 Nagpur, Maharashtra</option>
-                            <option value="Indore">🇮🇳 Indore, Madhya Pradesh</option>
-                            <option value="Chandigarh">🇮🇳 Chandigarh, Punjab/Haryana</option>
-                            <option value="Noida">🇮🇳 Noida, Uttar Pradesh</option>
-                            <option value="Gurgaon">🇮🇳 Gurgaon, Haryana</option>
-                            <option value="Abu Dhabi">🇦🇪 Abu Dhabi, UAE</option>
-                            <option value="Riyadh">🇸🇦 Riyadh, Saudi Arabia</option>
-                            <option value="London">🇬🇧 London, United Kingdom</option>
-                            <option value="New York">🇺🇸 New York, United States</option>
-                            <option value="Singapore">🇸🇬 Singapore</option>
+                        <span class="text-slate-400 text-xs mr-1">🌍 Target:</span>
+                        <input list="world-location-suggestions" id="global-city-input" value="Pune" onchange="onCityInputChange(this.value)" placeholder="Type any City, State, or Country..." class="bg-transparent text-xs font-bold text-white w-40 sm:w-52 focus:outline-none placeholder-slate-500">
+                        <datalist id="world-location-suggestions">
+                            <!-- INDIA - CITIES & STATES -->
+                            <option value="Pune">🇮🇳 Pune, Maharashtra (City)</option>
+                            <option value="Mumbai">🇮🇳 Mumbai / Bombay, Maharashtra (City)</option>
+                            <option value="Maharashtra">🏛️ Maharashtra (State, India)</option>
+                            <option value="Gujarat">🏛️ Gujarat (State, India)</option>
+                            <option value="India">🇮🇳 India (Country)</option>
+                            <option value="Delhi">🇮🇳 Delhi NCR (City / State)</option>
+                            <option value="Bangalore">🇮🇳 Bangalore / Bengaluru, Karnataka (City)</option>
+                            <option value="Hyderabad">🇮🇳 Hyderabad, Telangana (City)</option>
+                            <option value="Ahmedabad">🇮🇳 Ahmedabad, Gujarat (City)</option>
+                            <option value="Surat">🇮🇳 Surat, Gujarat (City)</option>
+                            <option value="Jaipur">🇮🇳 Jaipur, Rajasthan (City)</option>
+                            <option value="Kolkata">🇮🇳 Kolkata, West Bengal (City)</option>
+                            <option value="Chennai">🇮🇳 Chennai, Tamil Nadu (City)</option>
+                            <option value="Karnataka">🏛️ Karnataka (State, India)</option>
+                            <option value="Telangana">🏛️ Telangana (State, India)</option>
+                            <option value="Tamil Nadu">🏛️ Tamil Nadu (State, India)</option>
+
+                            <!-- MIDDLE EAST -->
+                            <option value="Dubai">🇦🇪 Dubai, UAE (City)</option>
+                            <option value="Abu Dhabi">🇦🇪 Abu Dhabi, UAE (City)</option>
+                            <option value="Sharjah">🇦🇪 Sharjah, UAE (City)</option>
+                            <option value="Riyadh">🇸🇦 Riyadh, Saudi Arabia (City)</option>
+                            <option value="Doha">🇶🇦 Doha, Qatar (City)</option>
+                            <option value="United Arab Emirates">🇦🇪 UAE (Country)</option>
+
+                            <!-- NORTH AMERICA & EUROPE -->
+                            <option value="New York">🇺🇸 New York, NY (City)</option>
+                            <option value="Los Angeles">🇺🇸 Los Angeles, CA (City)</option>
+                            <option value="California">🏛️ California (State, USA)</option>
+                            <option value="Texas">🏛️ Texas (State, USA)</option>
+                            <option value="United States">🇺🇸 United States (Country)</option>
+                            <option value="London">🇬🇧 London, United Kingdom (City)</option>
+                            <option value="United Kingdom">🇬🇧 United Kingdom (Country)</option>
+                            <option value="Toronto">🇨🇦 Toronto, Ontario (City)</option>
+                            <option value="Sydney">🇦🇺 Sydney, NSW (City)</option>
+                            <option value="Tokyo">🇯🇵 Tokyo, Japan (City)</option>
+                            <option value="Singapore">🇸🇬 Singapore (Country)</option>
+                            <option value="Berlin">🇩🇪 Berlin, Germany (City)</option>
+                            <option value="Paris">🇫🇷 Paris, France (City)</option>
                         </datalist>
-                        <button onclick="triggerCitySearch()" title="Search leads for this city" class="ml-2 px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shadow glow-brand transition-all flex items-center gap-1">
+                        <button onclick="triggerCitySearch()" title="Search leads for this location" class="ml-2 px-2.5 py-1 rounded bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-[11px] shadow glow-brand transition-all flex items-center gap-1">
                             <span>🔍 Search</span>
                         </button>
                     </div>
@@ -165,17 +198,21 @@
 
         <!-- Navigation Tabs -->
         <div class="flex items-center justify-between border-b border-dark-border pb-1">
-            <div class="flex space-x-3">
-                <button id="tab-leads" onclick="switchTab('leads')" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md">
+            <div class="flex space-x-2 sm:space-x-3 overflow-x-auto">
+                <button id="tab-leads" onclick="switchTab('leads')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-indigo-600 text-white shadow-md">
                     🎯 Qualified Leads (<span id="tab-leads-count">0</span>)
                 </button>
-                <button id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn px-4 py-2.5 rounded-lg text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all">
+                <button id="tab-dashboard" onclick="switchTab('dashboard')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all">
                     ⚙️ Search & Control Panel
+                </button>
+                <button id="tab-apis" onclick="switchTab('apis')" class="tab-btn px-3 sm:px-4 py-2.5 rounded-lg text-xs sm:text-sm font-semibold text-slate-400 hover:text-white hover:bg-dark-hover transition-all flex items-center gap-1.5">
+                    <span>🔌 API List & Explorer</span>
+                    <span class="px-1.5 py-0.2 rounded text-[9px] font-extrabold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">10 APIs</span>
                 </button>
             </div>
             
             <!-- Quick Stats Bar -->
-            <div class="hidden md:flex items-center gap-3 text-xs">
+            <div class="hidden lg:flex items-center gap-3 text-xs">
                 <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
                     <span class="text-slate-400">Total Leads:</span> <strong id="quick-total" class="text-white">0</strong>
                 </div>
@@ -211,7 +248,7 @@
                     <div class="flex items-center bg-dark-bg/80 border border-dark-border rounded-lg px-2.5 py-1.5 text-xs">
                         <span class="text-slate-400 mr-2 text-[11px]">Language:</span>
                         <select id="autopilot-lang-select" class="bg-transparent text-white font-semibold focus:outline-none cursor-pointer">
-                            <option value="en" class="bg-slate-900">🇬🇧 English (Global/Dubai)</option>
+                            <option value="en" class="bg-slate-900">🇬🇧 English (Global/India/Dubai)</option>
                             <option value="ar" class="bg-slate-900">🇦🇪 Arabic (العربية)</option>
                             <option value="bilingual" class="bg-slate-900">🌐 Bilingual (English + Arabic)</option>
                         </select>
@@ -237,7 +274,7 @@
 
                 <!-- Search Input & City Info -->
                 <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Filter by name, category, or area..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full sm:w-64 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Filter by name, category, city, state, country..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full sm:w-72 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
                     <button onclick="loadLeads()" class="px-3 py-2 bg-dark-hover hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-200 border border-dark-border transition-colors">
                         🔄 Refresh
                     </button>
@@ -297,18 +334,21 @@
 
                     <form id="discovery-form" class="space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target City / Hub</label>
-                            <input type="text" id="ctrl-city" value="Dubai" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2.5 text-xs text-white focus:ring-1 focus:ring-indigo-500">
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-semibold text-slate-300">Target City / State / Country</label>
+                                <button type="button" onclick="autoLoadLocationAreas()" class="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold underline cursor-pointer">⚡ Auto-Suggest Areas</button>
+                            </div>
+                            <input type="text" id="ctrl-city" value="Pune" placeholder="e.g. Pune, Bombay, Maharashtra, Gujarat, Dubai, USA..." class="w-full bg-dark-bg border border-dark-border rounded-lg p-2.5 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-bold">
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Districts / Areas (comma-separated)</label>
-                            <textarea id="ctrl-areas" rows="2" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">Al Quoz Industrial, Ras Al Khor Industrial, Deira Wholesale, Business Bay, JAFZA</textarea>
+                            <textarea id="ctrl-areas" rows="2" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">Baner, Kothrud, Hinjewadi, Viman Nagar, Hadapsar, Chinchwad</textarea>
                         </div>
 
                         <div>
                             <label class="block text-xs font-semibold text-slate-300 mb-1">Target Categories (B2B Dealers & Services)</label>
-                            <textarea id="ctrl-categories" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading llc, electrical suppliers wholesale</textarea>
+                            <textarea id="ctrl-categories" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading, electrical suppliers wholesale, textile wholesale</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -386,6 +426,73 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- NEW TAB: API LIST & CAPABILITY EXPLORER VIEW -->
+        <div id="content-apis" class="tab-content hidden space-y-6">
+            <!-- Header Banner -->
+            <div class="bg-gradient-to-r from-indigo-950 via-purple-950 to-slate-900 border border-indigo-500/40 rounded-xl p-5 shadow-2xl flex flex-wrap items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg font-black text-white">🔌 Integrated APIs & System Capability Catalog</span>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">10 ENGINES ONLINE</span>
+                    </div>
+                    <p class="text-xs text-slate-300 mt-1">
+                        Explore discovery engines, contact enrichers, deliverability shields, AI models, and FastAPI backend routes.
+                    </p>
+                </div>
+                <button onclick="loadApiCatalog()" class="px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow glow-brand transition-all flex items-center gap-1.5">
+                    <span>🔄 Refresh API Status</span>
+                </button>
+            </div>
+
+            <!-- API Category Filters -->
+            <div class="flex flex-wrap items-center gap-2 border-b border-dark-border pb-3">
+                <button onclick="filterApiCategory('ALL')" id="api-cat-ALL" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white">All APIs & Routes</button>
+                <button onclick="filterApiCategory('Discovery')" id="api-cat-Discovery" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🗺️ Discovery & Maps</button>
+                <button onclick="filterApiCategory('Executive')" id="api-cat-Executive" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">👤 Contact Enrichment</button>
+                <button onclick="filterApiCategory('Email')" id="api-cat-Email" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🛡️ Hygiene & Verification</button>
+                <button onclick="filterApiCategory('Dispatch')" id="api-cat-Dispatch" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🚀 Outreach Dispatch</button>
+                <button onclick="filterApiCategory('AI')" id="api-cat-AI" class="api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white">🧠 AI & Forensics</button>
+            </div>
+
+            <!-- API Cards Grid -->
+            <div id="api-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div class="col-span-full text-center py-12 text-slate-500">
+                    <div class="inline-block w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2"></div>
+                    <p>Loading API Catalog...</p>
+                </div>
+            </div>
+
+            <!-- FastAPI System Routes List -->
+            <div class="bg-dark-card border border-dark-border rounded-xl p-5 shadow-xl space-y-4">
+                <div class="flex items-center justify-between border-b border-dark-border pb-3">
+                    <div>
+                        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                            <span>⚡ FastAPI Backend System Routes</span>
+                        </h3>
+                        <p class="text-xs text-slate-400">Available REST endpoints for lead discovery, scoring, outreach, and location resolution</p>
+                    </div>
+                    <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-indigo-400 hover:text-indigo-300 border border-dark-border text-xs font-bold transition-all flex items-center gap-1">
+                        <span>📖 OpenAPI / Swagger Docs →</span>
+                    </a>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                        <thead>
+                            <tr class="bg-slate-900 border-b border-dark-border text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                                <th class="py-2.5 px-3">Method</th>
+                                <th class="py-2.5 px-3">Endpoint Path</th>
+                                <th class="py-2.5 px-4">Summary & Capability</th>
+                            </tr>
+                        </thead>
+                        <tbody id="api-routes-tbody" class="divide-y divide-dark-border">
+                            <!-- Injected dynamically -->
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -471,7 +578,7 @@
                         </div>
                         <div>
                             <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">WhatsApp / Phone</label>
-                            <input type="text" id="modal-pitch-phone" placeholder="+971 ..." class="w-full text-xs p-2 rounded-lg bg-dark-bg border border-dark-border text-white">
+                            <input type="text" id="modal-pitch-phone" placeholder="+91 / +971 ..." class="w-full text-xs p-2 rounded-lg bg-dark-bg border border-dark-border text-white">
                         </div>
                     </div>
 
@@ -578,8 +685,8 @@
                             <h3 class="text-base font-bold text-white">Direct Corporate RFQ & Inquiry</h3>
                             <p class="text-xs text-slate-400 mt-1">Clients can submit quote requests 24/7 directly to the CEO/sales desk.</p>
                             <div class="mt-4 text-xs space-y-1 text-slate-300">
-                                <p>📍 Location: <strong id="prev-loc" class="text-white">Dubai</strong></p>
-                                <p>📞 Phone: <strong id="prev-phone" class="text-white">+971 ...</strong></p>
+                                <p>📍 Location: <strong id="prev-loc" class="text-white">Pune</strong></p>
+                                <p>📞 Phone: <strong id="prev-phone" class="text-white">+91 ...</strong></p>
                             </div>
                         </div>
                         <div class="space-y-2">
@@ -708,7 +815,7 @@
                                 <h4 class="font-bold text-white">SerpApi Key (<code class="text-indigo-400 font-mono">SERPAPI_API_KEY</code>)</h4>
                                 <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400">ACTIVE & CONFIGURED</span>
                             </div>
-                            <p class="text-slate-400 mt-1">Extracts Google Maps and search results across Dubai, Riyadh, London, New York, and anywhere worldwide.</p>
+                            <p class="text-slate-400 mt-1">Extracts Google Maps and search results across Pune, Mumbai, Maharashtra, Gujarat, Dubai, Riyadh, London, New York, and anywhere worldwide.</p>
                         </div>
                     </div>
 
@@ -750,6 +857,12 @@
                 </div>
 
                 <div class="px-6 py-3 bg-slate-900 border-t border-dark-border flex justify-end">
+                    <button onclick="closeModal('modal-api-keys')" class="px-4 py-1.5 rounded-lg bg-dark-hover text-slate-200 hover:text-white text-xs">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL 5: 100% Autonomous Outreach HUD Terminal (Autopilot) -->
     <div id="modal-autopilot-progress" class="fixed inset-0 z-50 overflow-y-auto hidden">
         <div class="flex items-center justify-center min-h-screen px-4 py-6">
@@ -872,7 +985,7 @@
                         </div>
                     </div>
 
-                    <!-- Channel 3: ZeroBounce Email Hygiene (Domain Protection) -->
+                    <!-- Channel 3: ZeroBounce Email Hygiene -->
                     <div class="p-4 rounded-xl bg-dark-bg border border-emerald-500/30 space-y-2">
                         <div class="flex items-center justify-between">
                             <h4 class="font-bold text-emerald-300 flex items-center gap-1.5">
@@ -890,7 +1003,7 @@
                         </div>
                     </div>
 
-                    <!-- Channel 4: Anthropic Claude AI (Executive Pitch & Forensics) -->
+                    <!-- Channel 4: Anthropic Claude AI -->
                     <div class="p-4 rounded-xl bg-dark-bg border border-amber-500/30 space-y-2">
                         <div class="flex items-center justify-between">
                             <h4 class="font-bold text-amber-300 flex items-center gap-1.5">
@@ -903,7 +1016,6 @@
                         <div class="flex items-center gap-2">
                             <input type="password" id="cfg-anthropic-key" placeholder="Paste full sk-ant-api03-... key here" class="flex-grow bg-slate-900 border border-dark-border rounded-lg p-2 text-xs text-white font-mono focus:ring-1 focus:ring-amber-500">
                         </div>
-                        <p class="text-[10px] text-slate-500">💡 <em>Note: In Anthropic Console, click 'Create Key' and copy the full key starting with <code>sk-ant-api03-</code> before closing the modal.</em></p>
                     </div>
                 </div>
 
@@ -922,10 +1034,12 @@
         window.API_BASE = (window.location.protocol.startsWith('http') && window.location.host) 
             ? `${window.location.protocol}//${window.location.host}` 
             : 'http://127.0.0.1:8000';
-        let currentCity = 'Dubai';
+        let currentCity = 'Pune';
         let currentSegment = 'ALL';
+        let currentApiCategory = 'ALL';
         let allLeads = [];
         let filteredLeads = [];
+        let apiCatalogData = null;
         let currentPage = 1;
         const pageSize = 12;
 
@@ -949,11 +1063,15 @@
 
             document.getElementById(`content-${tab}`).classList.remove('hidden');
             const activeBtn = document.getElementById(`tab-${tab}`);
-            activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-dark-hover');
-            activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            if (activeBtn) {
+                activeBtn.classList.remove('text-slate-400', 'hover:text-white', 'hover:bg-dark-hover');
+                activeBtn.classList.add('bg-indigo-600', 'text-white', 'shadow-md');
+            }
 
             if (tab === 'leads') {
                 loadLeads();
+            } else if (tab === 'apis') {
+                loadApiCatalog();
             }
         }
 
@@ -982,6 +1100,12 @@
             }
         }
 
+        function setQuickLocation(loc) {
+            const input = document.getElementById('global-city-input');
+            if (input) input.value = loc;
+            onCityInputChange(loc);
+        }
+
         function onCityInputChange(city) {
             if (!city) return;
             currentCity = city.trim();
@@ -990,22 +1114,36 @@
             loadLeads();
         }
 
-        function onCityChange(city) {
-            onCityInputChange(city);
+        async function autoLoadLocationAreas() {
+            const ctrlCity = document.getElementById('ctrl-city');
+            const city = (ctrlCity ? ctrlCity.value : currentCity).trim();
+            if (!city) return;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/location/resolve?q=${encodeURIComponent(city)}`);
+                const data = await res.json();
+                if (data.suggested_areas && data.suggested_areas.length > 0) {
+                    document.getElementById('ctrl-areas').value = data.suggested_areas.join(', ');
+                    alert(`✅ Loaded recommended areas for ${data.city} (${data.country}):\n${data.suggested_areas.join(', ')}`);
+                }
+            } catch (err) {
+                console.warn('Location resolve failed:', err);
+            }
         }
 
         async function triggerCitySearch() {
             const input = document.getElementById('global-city-input');
             const city = (input ? input.value : currentCity).trim();
             if (!city) {
-                alert('Please enter or select a city name (e.g. Pune, Mumbai, Delhi, Bangalore).');
+                alert('Please enter or select a city, state, or country name (e.g. Pune, Bombay, Maharashtra, Gujarat, India).');
                 return;
             }
             currentCity = city;
             const ctrlCity = document.getElementById('ctrl-city');
             if (ctrlCity) ctrlCity.value = currentCity;
 
-            // Switch to search control panel and trigger discovery
+            await autoLoadLocationAreas();
+
             switchTab('dashboard');
             const msgEl = document.getElementById('discovery-status-msg');
             if (msgEl) {
@@ -1068,14 +1206,12 @@
             const query = (document.getElementById('filter-search').value || '').toLowerCase().trim();
 
             filteredLeads = allLeads.filter(lead => {
-                // Segment filter
                 if (currentSegment === 'B2B' && lead.business_type !== 'B2B' && !lead.is_dealer_or_wholesale) return false;
                 if (currentSegment === 'B2C' && lead.business_type === 'B2B') return false;
                 if (currentSegment === 'HOT' && lead.lead_priority !== 'HOT') return false;
 
-                // Search query
                 if (query) {
-                    const text = `${lead.business_name} ${lead.category || ''} ${lead.area || ''} ${lead.city || ''} ${lead.decision_maker_name || ''}`.toLowerCase();
+                    const text = `${lead.business_name} ${lead.category || ''} ${lead.area || ''} ${lead.city || ''} ${lead.state || ''} ${lead.country || ''} ${lead.decision_maker_name || ''}`.toLowerCase();
                     if (!text.includes(query)) return false;
                 }
                 return true;
@@ -1088,7 +1224,7 @@
         function renderLeadsTable() {
             const tbody = document.getElementById('leads-tbody');
             if (!filteredLeads.length) {
-                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><p class="text-base mb-1">No leads match this filter.</p><p class="text-xs">Click 'All Leads' or launch a new discovery run.</p></td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="text-center py-12 text-slate-500"><p class="text-base mb-1">No leads match this filter.</p><p class="text-xs">Click 'All Leads' or launch a new discovery run for Pune, Bombay, Maharashtra, Gujarat, etc.</p></td></tr>`;
                 document.getElementById('leads-page-info').textContent = '0';
                 return;
             }
@@ -1124,15 +1260,16 @@
                        </button>`;
 
                 const loopholeText = lead.loophole_summary || "Missing B2B Digital RFQ Catalog";
+                const locationTag = lead.state ? `📍 ${escapeHtml(lead.area || lead.city)}, ${escapeHtml(lead.state)}` : `📍 ${escapeHtml(lead.area || lead.city || 'Dubai')}`;
 
                 return `
                 <tr class="hover:bg-dark-hover/60 transition-colors">
                     <td class="py-3 px-4">
                         <div class="font-bold text-white text-xs">${escapeHtml(lead.business_name)}</div>
-                        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
-                            <span>${escapeHtml(lead.category || 'Trading')}</span>
+                        <div class="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5 flex-wrap">
+                            <span class="text-indigo-300 font-semibold">${escapeHtml(lead.category || 'Trading')}</span>
                             <span>•</span>
-                            <span>📍 ${escapeHtml(lead.area || lead.city || 'Dubai')}</span>
+                            <span class="text-slate-300 font-medium">${locationTag} (${escapeHtml(lead.country || 'India')})</span>
                             ${lead.google_rating ? `<span class="text-amber-400 font-semibold">★ ${lead.google_rating} (${lead.google_review_count || 0})</span>` : ''}
                         </div>
                     </td>
@@ -1177,6 +1314,96 @@
             renderLeadsTable();
         }
 
+        // --- API Catalog Loader & Category Filter ---
+        async function loadApiCatalog() {
+            const grid = document.getElementById('api-cards-grid');
+            const tbody = document.getElementById('api-routes-tbody');
+            if (grid) grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500"><div class="inline-block w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mb-2"></div><p>Loading API Catalog...</p></div>`;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/apis/list`);
+                const data = await res.json();
+                apiCatalogData = data;
+
+                renderApiCards();
+                renderApiRoutes();
+            } catch (err) {
+                if (grid) grid.innerHTML = `<div class="col-span-full text-center py-8 text-rose-400">Failed to load API catalog: ${err.message}</div>`;
+            }
+        }
+
+        function filterApiCategory(cat) {
+            currentApiCategory = cat;
+            document.querySelectorAll('.api-cat-btn').forEach(btn => {
+                btn.className = 'api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-dark-hover text-slate-300 hover:text-white';
+            });
+            const active = document.getElementById(`api-cat-${cat}`);
+            if (active) active.className = 'api-cat-btn px-3 py-1.5 text-xs font-bold rounded-lg bg-indigo-600 text-white';
+            renderApiCards();
+        }
+
+        function renderApiCards() {
+            const grid = document.getElementById('api-cards-grid');
+            if (!grid || !apiCatalogData) return;
+
+            let apis = apiCatalogData.apis || [];
+            if (currentApiCategory !== 'ALL') {
+                apis = apis.filter(a => a.category.toLowerCase().includes(currentApiCategory.toLowerCase()));
+            }
+
+            grid.innerHTML = apis.map(api => {
+                const statusBadge = api.active
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">● ACTIVE</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-slate-800 text-slate-400 border border-slate-700">OPTIONAL</span>`;
+
+                return `
+                <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg space-y-3 flex flex-col justify-between hover:border-indigo-500/50 transition-all">
+                    <div class="space-y-2">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-indigo-400">${escapeHtml(api.category)}</span>
+                            ${statusBadge}
+                        </div>
+                        <h4 class="text-sm font-bold text-white">${escapeHtml(api.name)}</h4>
+                        <p class="text-xs text-slate-300 leading-relaxed">${escapeHtml(api.description)}</p>
+                    </div>
+
+                    <div class="pt-2 border-t border-dark-border/80 space-y-1.5 text-[11px] font-mono text-slate-400">
+                        <div class="flex justify-between truncate">
+                            <span>Endpoint:</span>
+                            <span class="text-slate-200 font-bold truncate max-w-[160px]">${escapeHtml(api.endpoint)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Rate Limit:</span>
+                            <span class="text-indigo-300">${escapeHtml(api.rate_limit)}</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>Mode:</span>
+                            <span class="text-emerald-400 font-semibold">${escapeHtml(api.mode)}</span>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        function renderApiRoutes() {
+            const tbody = document.getElementById('api-routes-tbody');
+            if (!tbody || !apiCatalogData) return;
+
+            const routes = apiCatalogData.fastapi_endpoints || [];
+            tbody.innerHTML = routes.map(r => {
+                const methodBadge = r.method === 'GET'
+                    ? `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">GET</span>`
+                    : `<span class="px-2 py-0.5 rounded text-[10px] font-black bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">POST</span>`;
+
+                return `
+                <tr class="hover:bg-dark-hover/40 transition-colors">
+                    <td class="py-2.5 px-3">${methodBadge}</td>
+                    <td class="py-2.5 px-3 font-mono font-bold text-slate-200">${escapeHtml(r.path)}</td>
+                    <td class="py-2.5 px-4 text-slate-300">${escapeHtml(r.summary)}</td>
+                </tr>`;
+            }).join('');
+        }
+
         // CEO Discovery Action
         async function discoverCEO(leadId) {
             try {
@@ -1218,10 +1445,9 @@
             activeLead = allLeads.find(l => l.id === leadId);
             if (!activeLead) return;
 
-            document.getElementById('modal-pitch-subtitle').textContent = `Targeting CEO / Owner of ${activeLead.business_name} (${activeLead.area || activeLead.city || 'Dubai'})`;
+            document.getElementById('modal-pitch-subtitle').textContent = `Targeting CEO / Owner of ${activeLead.business_name} (${activeLead.area || activeLead.city || 'Pune'})`;
             document.getElementById('modal-pitch-ceo').value = activeLead.decision_maker_name || 'CEO / Owner';
             
-            // Auto-populate email ONLY if a real verified email exists! Never invent fake non-existent domains!
             const emailToUse = (activeLead.decision_maker_email || activeLead.email || '').trim();
             const emailInput = document.getElementById('modal-pitch-email');
             emailInput.value = emailToUse;
@@ -1240,7 +1466,6 @@
             loadPitchStep(1);
         }
 
-        // Auto-Suggest / Search verified email from database & Apollo/Snov
         async function autoSuggestEmail() {
             if (!activeLead) return;
             const emailInput = document.getElementById('modal-pitch-email');
@@ -1261,7 +1486,6 @@
             showStatus('modal-pitch-status', 'warning', '💡 No verified email found in databases. Please enter their direct email manually or click 💬 WhatsApp (1-Click) below.');
         }
 
-        // Load Step 1, 2, or 3 Pitch
         async function loadPitchStep(step) {
             activePitchStep = step;
             [1, 2, 3].forEach(s => {
@@ -1309,15 +1533,12 @@
                 }
 
                 document.getElementById('modal-pitch-subject').value = activePitchData.subject || '';
-                
-                // Automatically run typing animation on step change
                 startTypewriterAnimation();
             } catch (err) {
                 document.getElementById('modal-pitch-content').value = `Error generating pitch: ${err.message}`;
             }
         }
 
-        // Typewriter Animation Engine
         function startTypewriterAnimation() {
             const textarea = document.getElementById('modal-pitch-content');
             const indicator = document.getElementById('typing-indicator');
@@ -1335,7 +1556,7 @@
             if (indicator) indicator.classList.remove('hidden');
 
             let index = 0;
-            const speed = 8; // Fast, fluid typing animation
+            const speed = 8;
 
             typewriterTimer = setInterval(() => {
                 const chunk = fullText.slice(index, index + 6);
@@ -1351,38 +1572,6 @@
             }, speed);
         }
 
-        // Open Website Preview Modal
-        async function openWebsitePreview(leadId) {
-            const lead = allLeads.find(l => l.id === leadId);
-            if (!lead) return;
-
-            try {
-                const res = await fetch(`${window.API_BASE}/leads/${leadId}/website-preview`);
-                const data = await res.json();
-
-                document.getElementById('preview-url-bar').textContent = `https://preview.agency-engine.com/${lead.business_name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-                document.getElementById('prev-badge').textContent = `Official ${data.business_type} Portal`;
-                document.getElementById('prev-hero-title').textContent = data.hero_title;
-                document.getElementById('prev-hero-subtitle').textContent = data.hero_subtitle;
-                document.getElementById('prev-cta-btn').textContent = data.primary_cta;
-                document.getElementById('prev-loc').textContent = data.location;
-                document.getElementById('prev-phone').textContent = data.phone;
-
-                const grid = document.getElementById('prev-services-grid');
-                grid.innerHTML = data.services.map(s => `
-                    <div class="bg-dark-card border border-dark-border p-4 rounded-xl text-left">
-                        <span class="text-indigo-400 font-bold block mb-1 text-xs">✓ ${escapeHtml(s.title)}</span>
-                        <p class="text-[11px] text-slate-300">${escapeHtml(s.desc)}</p>
-                    </div>
-                `).join('');
-
-                openModal('modal-preview');
-            } catch (err) {
-                alert(`Failed to load website mockup: ${err.message}`);
-            }
-        }
-
-        // Open Loophole Dossier Modal
         async function openDossier(leadId) {
             const lead = allLeads.find(l => l.id === leadId);
             if (!lead) return;
@@ -1423,7 +1612,6 @@
             }
         }
 
-        // Outreach Action Handlers
         function copyPitch() {
             const text = document.getElementById('modal-pitch-content').value;
             navigator.clipboard.writeText(text).then(() => {
@@ -1433,10 +1621,6 @@
 
         function openInGmail() {
             let email = document.getElementById('modal-pitch-email').value.trim();
-            if (!email && activeLead) {
-                email = getSuggestedEmail(activeLead.business_name, activeLead.city);
-                document.getElementById('modal-pitch-email').value = email;
-            }
             const encodedEmail = encodeURIComponent(email);
             const subject = encodeURIComponent(document.getElementById('modal-pitch-subject').value);
             const body = encodeURIComponent(document.getElementById('modal-pitch-content').value);
@@ -1459,7 +1643,7 @@
             const body = document.getElementById('modal-pitch-content').value.trim();
 
             if (!email) {
-                alert('⚠️ No email address available for this business.\n\nLocal businesses without websites rarely have custom domain emails. Please click "💬 WhatsApp" to pitch them directly on their phone number!');
+                alert('⚠️ No email address available for this business. Please click "💬 WhatsApp" to pitch them directly on their phone number!');
                 showStatus('modal-pitch-status', 'warning', '⚠️ Please enter a verified email or click "💬 WhatsApp" below.');
                 return;
             }
@@ -1477,25 +1661,22 @@
                 const data = await res.json();
                 if (res.ok) {
                     if (data.delivered) {
-                        showStatus('modal-pitch-status', 'success', `✅ Dispatched via Gmail to ${email}! Check your Gmail Sent folder.`);
-                        alert(`✅ Email delivered to ${email} via Gmail SMTP!\nCheck your Gmail Sent folder.`);
+                        showStatus('modal-pitch-status', 'success', `✅ Dispatched via Gmail to ${email}!`);
+                        alert(`✅ Email delivered to ${email} via Gmail SMTP!`);
                     } else {
                         showStatus('modal-pitch-status', 'warning', data.message || 'Email staged.');
-                        alert(data.message || 'Email draft staged.');
                     }
                 } else {
                     showStatus('modal-pitch-status', 'error', data.detail || 'Failed to send.');
-                    alert(`Send failed: ${data.detail || 'Unknown error'}`);
                 }
             } catch (err) {
-                showStatus('modal-pitch-status', 'error', `SMTP Error: ${err.message}. Click 'Open in Gmail' to send via your browser.`);
+                showStatus('modal-pitch-status', 'error', `SMTP Error: ${err.message}`);
             } finally {
                 btn.disabled = false;
                 btn.innerHTML = '<span>🚀 Send via SMTP</span>';
             }
         }
 
-        // Purge Existing Websites Utility
         async function purgeWebsites() {
             if (!confirm('This will purge any business in the database that has an active working website, ensuring ONLY 100% no-website leads remain. Proceed?')) return;
             try {
@@ -1508,7 +1689,6 @@
             }
         }
 
-        // Launch Discovery Run
         async function startDiscovery() {
             const city = document.getElementById('ctrl-city').value.trim();
             const areas = document.getElementById('ctrl-areas').value.split(',').map(s => s.trim()).filter(Boolean);
@@ -1533,7 +1713,7 @@
                 const data = await res.json();
                 if (res.ok) {
                     msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-emerald-900/30 text-emerald-300 block';
-                    msgEl.textContent = `✅ Job started (ID: ${data.job_id || 'running'}). Discovering 100% no-website leads in the background.`;
+                    msgEl.textContent = `✅ Job started (ID: ${data.run_id || 'running'}). Discovering leads in background.`;
                     setTimeout(() => loadLeads(), 3000);
                 } else {
                     msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-rose-900/30 text-rose-300 block';
@@ -1551,8 +1731,6 @@
             el.textContent = msg;
         }
 
-        // --- 100% Autonomous Outreach & Autopilot Engine ---
-
         async function checkDeliveryStatus() {
             try {
                 const res = await fetch(`${window.API_BASE}/leads/automation/status`);
@@ -1561,20 +1739,14 @@
                 const zb = conn.zerobounce || {};
                 const badge = document.getElementById('delivery-channel-badge');
                 const statusBox = document.getElementById('email-setup-status-text');
-                const zbBadge = document.getElementById('zb-badge-status');
 
                 let zbText = zb.active ? ` • <span class="text-emerald-400 font-bold">🛡️ ZeroBounce (${zb.credits} Cr)</span>` : '';
-                if (zbBadge) {
-                    zbBadge.textContent = zb.active ? `${zb.credits} CREDITS ACTIVE` : 'INACTIVE';
-                    zbBadge.className = zb.active ? 'px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400' : 'px-1.5 py-0.5 rounded text-[9px] font-black bg-slate-700 text-slate-300';
-                }
-
                 if (conn.active) {
                     badge.innerHTML = `🟢 Live Sending: <span class="text-emerald-400 font-bold ml-1">${escapeHtml(conn.provider)}</span>${zbText}`;
                     if (statusBox) statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✓ ${escapeHtml(conn.provider)} Connected</span> (${escapeHtml(conn.details || 'Ready for outreach')})`;
                 } else {
                     badge.innerHTML = `⚙️ Delivery Channel: <span class="text-amber-400 font-bold ml-1">Setup / Staged</span>${zbText}`;
-                    if (statusBox) statusBox.innerHTML = `<span class="text-amber-400 font-bold">⚠️ ${escapeHtml(conn.status || 'Pending')}</span>: ${escapeHtml(conn.error || conn.details || 'Enter credentials below')}`;
+                    if (statusBox) statusBox.innerHTML = `<span class="text-amber-400 font-bold">⚠️ ${escapeHtml(conn.status || 'Pending')}</span>`;
                 }
             } catch (e) {
                 console.warn('Status check failed:', e);
@@ -1582,41 +1754,34 @@
         }
 
         async function testZeroBounceNow() {
-            const zbBadge = document.getElementById('zb-badge-status');
-            if (zbBadge) zbBadge.textContent = 'CHECKING...';
             try {
                 const res = await fetch(`${window.API_BASE}/leads/automation/zerobounce-status`);
                 const data = await res.json();
                 if (data.active) {
-                    if (zbBadge) {
-                        zbBadge.textContent = `${data.credits} CREDITS ACTIVE`;
-                        zbBadge.className = 'px-1.5 py-0.5 rounded text-[9px] font-black bg-emerald-500/20 text-emerald-400';
-                    }
-                    alert(`✅ ZeroBounce Active & Verified!\nAvailable Credits: ${data.credits}\nEmail hygiene shield is protecting your domain reputation.`);
+                    alert(`✅ ZeroBounce Active & Verified!\nAvailable Credits: ${data.credits}`);
                 } else {
-                    if (zbBadge) zbBadge.textContent = 'INACTIVE';
-                    alert('ZeroBounce is currently inactive. Please check your API key.');
+                    alert('ZeroBounce is currently inactive.');
                 }
                 checkDeliveryStatus();
             } catch (err) {
-                alert(`ZeroBounce test error: ${err.message}`);
+                alert(`ZeroBounce error: ${err.message}`);
             }
         }
 
         async function testEmailConnectionNow() {
             const statusBox = document.getElementById('email-setup-status-text');
-            statusBox.innerHTML = `<span class="text-indigo-400 animate-pulse">Testing delivery connection...</span>`;
+            if (statusBox) statusBox.innerHTML = `<span class="text-indigo-400 animate-pulse">Testing connection...</span>`;
             try {
                 const res = await fetch(`${window.API_BASE}/leads/automation/test-connection`, { method: 'POST' });
                 const conn = await res.json();
                 if (conn.active) {
-                    statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Success!</span> ${escapeHtml(conn.provider)} is active and authenticated.`;
+                    if (statusBox) statusBox.innerHTML = `<span class="text-emerald-400 font-bold">✅ Success!</span> ${escapeHtml(conn.provider)} is active.`;
                 } else {
-                    statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ ${escapeHtml(conn.status || 'Failed')}:</span> <span class="text-slate-300">${escapeHtml(conn.error || conn.details || 'Check details')}</span>`;
+                    if (statusBox) statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ ${escapeHtml(conn.status || 'Failed')}</span>`;
                 }
                 checkDeliveryStatus();
             } catch (err) {
-                statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ Connection test error:</span> ${err.message}`;
+                if (statusBox) statusBox.innerHTML = `<span class="text-rose-400 font-bold">❌ Error:</span> ${err.message}`;
             }
         }
 
@@ -1640,14 +1805,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const data = await res.json();
                 if (res.ok) {
-                    alert('✅ Settings saved! Testing connection...');
+                    alert('✅ Settings saved!');
                     testEmailConnectionNow();
-                    testZeroBounceNow();
-                    checkDeliveryStatus();
                 } else {
-                    alert(`Save failed: ${data.detail || 'Unknown error'}`);
+                    alert('Save failed.');
                 }
             } catch (err) {
                 alert(`Error saving credentials: ${err.message}`);
@@ -1671,64 +1833,43 @@
                 terminal.scrollTop = terminal.scrollHeight;
             }
 
-            log('🤖 Initializing 100% Autonomous CEO Outreach Engine (Autopilot)...', 'text-indigo-300 font-extrabold');
-            log('Enforcing strict policy: 100% verified NO-WEBSITE businesses only.', 'text-slate-400');
-            log(`Language Cadence: ${lang.toUpperCase()} (Dubai / Global executive format)`, 'text-slate-400');
-            log('Developer Credentials: Sandesh Barde (India) • Portfolio & GitHub embedded', 'text-purple-300');
+            log('🤖 Initializing 100% Autonomous CEO Outreach Engine...', 'text-indigo-300 font-extrabold');
+            log('Enforcing policy: 100% verified NO-WEBSITE businesses only.', 'text-slate-400');
+            log('Developer Credentials: Sandesh Barde (India)', 'text-purple-300');
             
             pBar.style.width = '20%';
             pPercent.textContent = '20%';
-            pText.textContent = 'Scanning database for uncontacted CEO prospects...';
+            pText.textContent = 'Scanning database for CEO prospects...';
 
             try {
                 const res = await fetch(`${window.API_BASE}/leads/automation/dispatch-all`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        language: lang,
-                        max_leads: 50,
-                        throttle_seconds: 0.5
-                    })
+                    body: JSON.stringify({ language: lang, max_leads: 50, throttle_seconds: 0.5 })
                 });
                 const data = await res.json();
                 const summary = data.summary || {};
 
-                pBar.style.width = '75%';
-                pPercent.textContent = '75%';
-                pText.textContent = 'Processing leads, diagnosing loopholes, and dispatching pitches...';
-
-                if (summary.results && summary.results.length > 0) {
-                    summary.results.forEach((r, idx) => {
-                        const statusColor = r.status === 'SENT' ? 'text-emerald-400 font-bold' : (r.status === 'STAGED' ? 'text-amber-400 font-bold' : 'text-rose-400');
-                        const methodBadge = r.method ? `[${r.method.toUpperCase()}]` : '';
-                        log(`⚡ (${idx + 1}/${summary.results.length}) ${escapeHtml(r.business_name)} -> ${escapeHtml(r.ceo_name)} (${escapeHtml(r.recipient_email)}) [${r.status} ${methodBadge}]`, statusColor);
-                        if (r.error) {
-                            log(`   ↳ Diagnostic: ${escapeHtml(r.error)}`, 'text-rose-300 text-[10px]');
-                        }
-                    });
-                } else {
-                    log('ℹ️ No uncontacted leads found. All qualified leads have already received pitches!', 'text-amber-300');
-                }
-
                 pBar.style.width = '100%';
                 pPercent.textContent = '100%';
-                pText.textContent = `Completed! ${summary.dispatched || 0} leads processed autonomously.`;
-                log(`🎉 Autonomous campaign execution complete! Dispatched: ${summary.dispatched}, Failed: ${summary.failed}`, 'text-emerald-300 font-black');
+                pText.textContent = `Completed! ${summary.dispatched || 0} leads processed.`;
+
+                if (summary.results) {
+                    summary.results.forEach((r, idx) => {
+                        log(`⚡ (${idx + 1}/${summary.results.length}) ${escapeHtml(r.business_name)} -> ${escapeHtml(r.ceo_name)} [${r.status}]`);
+                    });
+                }
 
                 loadLeads();
                 checkDeliveryStatus();
             } catch (err) {
-                log(`❌ Outreach execution error: ${err.message}`, 'text-rose-400 font-bold');
-                pText.textContent = 'Error occurred during autonomous outreach.';
+                log(`❌ Error: ${err.message}`, 'text-rose-400 font-bold');
             }
         }
 
         async function autoSendSingleLead(leadId) {
             const btn = document.getElementById(`btn-auto-${leadId}`);
-            if (btn) {
-                btn.disabled = true;
-                btn.innerHTML = `<span class="inline-block w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></span>`;
-            }
+            if (btn) btn.disabled = true;
 
             try {
                 const lang = document.getElementById('autopilot-lang-select').value || 'en';
@@ -1739,12 +1880,11 @@
                 });
                 const data = await res.json();
                 if (res.ok && data.success) {
-                    alert(`✅ Autonomous pitch dispatched to ${data.ceo_name} (${data.recipient_email}) via ${data.method}!`);
+                    alert(`✅ Autonomous pitch dispatched to ${data.ceo_name}!`);
                 } else {
-                    alert(`ℹ️ Outreach processed: Status is ${data.status || 'staged'}. ${data.error || data.message || ''}`);
+                    alert(`ℹ️ Outreach processed: ${data.message || 'staged'}`);
                 }
                 loadLeads();
-                checkDeliveryStatus();
             } catch (err) {
                 alert(`Error: ${err.message}`);
                 loadLeads();
@@ -1756,7 +1896,6 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Call checkDeliveryStatus on startup
         document.addEventListener('DOMContentLoaded', () => {
             checkDeliveryStatus();
         });

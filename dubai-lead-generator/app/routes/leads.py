@@ -94,6 +94,8 @@ def list_leads(
     skip: int = 0,
     limit: int = 100,
     city: Optional[str] = None,
+    state: Optional[str] = None,
+    country: Optional[str] = None,
     area: Optional[str] = None,
     category: Optional[str] = None,
     business_type: Optional[str] = None,
@@ -106,13 +108,15 @@ def list_leads(
     min_score: Optional[int] = None,
     db: Session = Depends(get_db),
 ):
-    """List leads with optional filters including city, B2B wholesale, contact status, and priority."""
+    """List leads with optional filters including city, state, country, B2B wholesale, contact status, and priority."""
     effective_priority = lead_priority or priority
     businesses = repo.get_businesses(
         db,
         skip=skip,
         limit=limit,
         city=city,
+        state=state,
+        country=country,
         area=area,
         category=category,
         business_type=business_type,
