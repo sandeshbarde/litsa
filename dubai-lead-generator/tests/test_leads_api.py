@@ -64,3 +64,20 @@ def test_automation_dispatch_staged(client):
     assert "summary" in data
     assert "dispatched" in data["summary"]
 
+
+def test_whatsapp_broadcast_endpoint(client):
+    res = client.post("/leads/whatsapp-broadcast", json={"business_type": "ALL", "language": "en", "mark_as_contacted": False})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["success"] is True
+    assert "total_targets" in data
+    assert "total_with_phone" in data
+    assert "broadcast_list" in data
+
+
+def test_export_whatsapp_csv(client):
+    res = client.get("/leads/export/whatsapp-csv?business_type=ALL&language=en")
+    assert res.status_code == 200
+    assert "text/csv" in res.headers["content-type"]
+
+

@@ -5,6 +5,8 @@ Lead management endpoints.
 import csv
 import io
 import json
+import re
+import urllib.parse
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 import requests
@@ -65,6 +67,18 @@ class AutopilotDispatchRequest(BaseModel):
 class AutoPitchSendRequest(BaseModel):
     language: Optional[str] = "en"
     sequence_step: Optional[int] = 1
+
+
+class WhatsAppBroadcastRequest(BaseModel):
+    business_type: Optional[str] = "ALL"  # ALL, B2B, B2C
+    lead_ids: Optional[List[str]] = None
+    category: Optional[str] = None
+    city: Optional[str] = None
+    lead_priority: Optional[str] = None
+    language: Optional[str] = "en"  # en, ar, bilingual
+    sequence_step: Optional[int] = 1
+    custom_message: Optional[str] = None
+    mark_as_contacted: Optional[bool] = True
 
 
 class CredentialsUpdateRequest(BaseModel):
@@ -1142,6 +1156,194 @@ def search_stored_data(
         "total": len(businesses),
         "leads": [b.to_dict() for b in businesses],
     }
+
+
+def clean_phone_for_whatsapp(phone: Optional[str]) -> str:
+    if not phone:
+        return ""
+    digits = re.sub(r'[^\d]', '', str(phone))
+    return digits
+
+
+@router.post("/whatsapp-broadcast")
+def prepare_whatsapp_broadcast(
+    request: WhatsAppBroadcastRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Prepares instant WhatsApp broadcast packages for all matching discovered leads (B2B + B2C).
+    Generates personalized pitch text and direct WhatsApp click-to-send links.
+    Optionally marks contacts in DB as contacted via WhatsApp.
+    """
+    from app.models import Business
+    query = db.query(Business)
+    
+    if request.lead_ids and len(request.lead_ids) > 0:
+        query = query.filter(Business.id.in_(request.lead_ids))
+    else:
+        if request.business_type and request.business_type.upper() != "ALL":
+            query = query.filter(Business.business_type == request.business_type.upper())
+        if request.city and request.city.strip():
+            query = query.filter(Business.city.ilike(f"%{request.city.strip()}%"))
+        if request.category and request.category.strip():
+            query = query.filter(Business.category.ilike(f"%{request.category.strip()}%"))
+        if request.lead_priority:
+            query = query.filter(Business.lead_priority == request.lead_priority)
+
+    businesses = query.order_by(Business.lead_score.desc()).all()
+    
+    items = []
+    contacted_count = 0
+    b2b_count = 0
+    b2c_count = 0
+
+    for biz in businesses:
+        if biz.business_type == "B2C":
+            b2c_count += 1
+        else:
+            b2b_count += 1
+
+        phone_clean = clean_phone_for_whatsapp(biz.phone_normalized or biz.phone)
+        if not phone_clean:
+            continue
+
+        pitch_res = pitch_generator.generate_ceo_pitch(
+            business_name=biz.business_name,
+            category=biz.category or "Commercial Enterprise",
+            city=biz.city or "Dubai",
+            area=biz.area or "",
+            ceo_name=biz.decision_maker_name,
+            ceo_title=biz.decision_maker_title,
+            loophole_data=biz.loophole_data or {},
+            sequence_step=request.sequence_step or 1,
+            language=request.language or "en",
+        )
+
+        pitch_text = request.custom_message or pitch_res.get("body", "")
+        encoded_pitch = urllib.parse.quote(pitch_text)
+
+        wa_url = f"https://api.whatsapp.com/send?phone={phone_clean}&text={encoded_pitch}"
+        wa_web_url = f"https://web.whatsapp.com/send?phone={phone_clean}&text={encoded_pitch}"
+        wa_app_url = f"whatsapp://send?phone={phone_clean}&text={encoded_pitch}"
+
+        if request.mark_as_contacted:
+            biz.contacted = True
+            biz.contact_date = datetime.utcnow()
+            biz.contact_channel = "whatsapp"
+            biz.contact_status = "whatsapp_broadcast_sent"
+            biz.crm_status = "SENT"
+            contacted_count += 1
+
+        items.append({
+            "id": biz.id,
+            "business_name": biz.business_name,
+            "business_type": biz.business_type or "B2B",
+            "category": biz.category or "",
+            "city": biz.city or "",
+            "area": biz.area or "",
+            "phone": biz.phone or "",
+            "phone_clean": phone_clean,
+            "decision_maker_name": biz.decision_maker_name,
+            "decision_maker_title": biz.decision_maker_title,
+            "pitch_text": pitch_text,
+            "whatsapp_url": wa_url,
+            "whatsapp_web_url": wa_web_url,
+            "whatsapp_app_url": wa_app_url,
+        })
+
+    if request.mark_as_contacted and contacted_count > 0:
+        db.commit()
+
+    return {
+        "success": True,
+        "total_targets": len(businesses),
+        "total_with_phone": len(items),
+        "b2b_count": b2b_count,
+        "b2c_count": b2c_count,
+        "contacted_updated": contacted_count,
+        "broadcast_list": items,
+    }
+
+
+@router.get("/export/whatsapp-csv")
+def export_whatsapp_csv(
+    business_type: Optional[str] = "ALL",
+    city: Optional[str] = None,
+    category: Optional[str] = None,
+    language: Optional[str] = "en",
+    db: Session = Depends(get_db),
+):
+    """
+    Export WhatsApp broadcast list as downloadable CSV with phone numbers, direct WA URLs, and pitches.
+    """
+    from app.models import Business
+    query = db.query(Business)
+    if business_type and business_type.upper() != "ALL":
+        query = query.filter(Business.business_type == business_type.upper())
+    if city and city.strip():
+        query = query.filter(Business.city.ilike(f"%{city.strip()}%"))
+    if category and category.strip():
+        query = query.filter(Business.category.ilike(f"%{category.strip()}%"))
+
+    businesses = query.order_by(Business.lead_score.desc()).all()
+
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Business ID",
+        "Business Name",
+        "Business Type",
+        "Category",
+        "City",
+        "Area",
+        "Phone Number",
+        "Clean WhatsApp Phone",
+        "Target CEO / Owner",
+        "WhatsApp Direct Link",
+        "Personalized Pitch"
+    ])
+
+    for b in businesses:
+        phone_clean = clean_phone_for_whatsapp(b.phone_normalized or b.phone)
+        if not phone_clean:
+            continue
+
+        pitch_res = pitch_generator.generate_ceo_pitch(
+            business_name=b.business_name,
+            category=b.category or "Commercial Enterprise",
+            city=b.city or "Dubai",
+            area=b.area or "",
+            ceo_name=b.decision_maker_name,
+            ceo_title=b.decision_maker_title,
+            loophole_data=b.loophole_data or {},
+            language=language or "en",
+        )
+        pitch_text = pitch_res.get("body", "")
+        encoded_pitch = urllib.parse.quote(pitch_text)
+        wa_url = f"https://api.whatsapp.com/send?phone={phone_clean}&text={encoded_pitch}"
+
+        writer.writerow([
+            b.id,
+            b.business_name,
+            b.business_type or "B2B",
+            b.category or "",
+            b.city or "",
+            b.area or "",
+            b.phone or "",
+            phone_clean,
+            b.decision_maker_name or b.decision_maker_title or "CEO",
+            wa_url,
+            pitch_text
+        ])
+
+    csv_data = output.getvalue()
+    filename = f"whatsapp_broadcast_export_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+    return Response(
+        content=csv_data,
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
 
 
 

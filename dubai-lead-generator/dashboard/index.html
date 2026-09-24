@@ -216,6 +216,12 @@
                 <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
                     <span class="text-slate-400">B2B Wholesalers:</span> <strong id="quick-b2b" class="text-indigo-400">0</strong>
                 </div>
+                <div class="bg-dark-card border border-dark-border px-3 py-1.5 rounded-lg">
+                    <span class="text-slate-400">B2C Retail & Services:</span> <strong id="quick-b2c" class="text-amber-400">0</strong>
+                </div>
+                <div class="bg-dark-card border border-emerald-500/40 px-3 py-1.5 rounded-lg bg-emerald-500/10">
+                    <span class="text-emerald-300 font-semibold">💬 WhatsApp Numbers:</span> <strong id="quick-wa" class="text-emerald-400 font-black">0</strong>
+                </div>
             </div>
         </div>
 
@@ -250,6 +256,9 @@
                     <button onclick="openModal('modal-email-setup')" class="px-3 py-2 rounded-lg bg-dark-bg/80 hover:bg-slate-800 text-slate-300 hover:text-white border border-dark-border text-xs font-semibold transition-all flex items-center gap-1.5">
                         <span id="delivery-channel-badge">⚙️ Email Settings</span>
                     </button>
+                    <button onclick="openWhatsAppBroadcastModal()" class="px-4 py-2.5 rounded-xl font-extrabold text-xs text-white bg-emerald-600 hover:bg-emerald-500 border border-emerald-400/40 shadow-lg glow-emerald transition-all flex items-center gap-1.5 transform active:scale-95">
+                        <span>📲 WHATSAPP MASS BROADCAST</span>
+                    </button>
                     <button onclick="launchAutopilot()" id="btn-launch-autopilot" class="px-5 py-2.5 rounded-xl font-black text-xs text-white bg-gradient-to-r from-emerald-500 via-teal-500 to-indigo-600 hover:from-emerald-400 hover:to-indigo-500 shadow-xl glow-brand transition-all flex items-center gap-2 transform active:scale-95">
                         <span>⚡ RUN AUTOPILOT OUTREACH NOW</span>
                     </button>
@@ -267,8 +276,11 @@
                 </div>
 
                 <!-- Search Input & City Info -->
-                <div class="flex items-center gap-3 w-full sm:w-auto">
-                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Filter by name, category, city, state, country..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full sm:w-72 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                <div class="flex items-center gap-2.5 w-full sm:w-auto flex-wrap">
+                    <input type="text" id="filter-search" oninput="applyFilters()" placeholder="Filter by name, category, city, state, country..." class="bg-dark-bg border border-dark-border text-xs rounded-lg px-3 py-2 w-full sm:w-64 text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500">
+                    <button onclick="openWhatsAppBroadcastModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-xs font-bold rounded-lg text-white shadow transition-colors flex items-center gap-1">
+                        <span>📲 WhatsApp Mass Broadcast</span>
+                    </button>
                     <button onclick="loadLeads()" class="px-3 py-2 bg-dark-hover hover:bg-slate-700 text-xs font-medium rounded-lg text-slate-200 border border-dark-border transition-colors">
                         🔄 Refresh
                     </button>
@@ -715,6 +727,126 @@
                         </button>
                         <button type="button" onclick="sendEmailDirect()" id="btn-send-smtp" class="px-4 py-2 rounded-lg text-xs font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow glow-brand flex items-center gap-1">
                             <span>🚀 Send via SMTP</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: 1-CLICK INSTANT WHATSAPP MASS BROADCAST (B2B + B2C) -->
+    <div id="modal-whatsapp-broadcast" class="fixed inset-0 z-50 overflow-y-auto hidden">
+        <div class="flex items-center justify-center min-h-screen px-4 py-6">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" onclick="closeModal('modal-whatsapp-broadcast')"></div>
+            
+            <div class="relative bg-dark-card border border-emerald-500/40 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden z-10">
+                <!-- Header -->
+                <div class="px-6 py-4 bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 border-b border-emerald-500/30 flex items-center justify-between">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h3 class="text-base font-black text-white flex items-center gap-2">
+                                <span>📲 1-Click WhatsApp Mass Broadcast Engine</span>
+                            </h3>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 animate-pulse">B2B + B2C READY</span>
+                        </div>
+                        <p class="text-xs text-slate-300 mt-0.5">
+                            Directly broadcast custom pitches to ALL discovered phone numbers in one continuous session or single-click link package.
+                        </p>
+                    </div>
+                    <button onclick="closeModal('modal-whatsapp-broadcast')" class="text-slate-400 hover:text-white text-lg font-bold">✕</button>
+                </div>
+
+                <!-- Form Controls -->
+                <div class="p-6 space-y-4">
+                    <!-- Segment Selection -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Target Segment</label>
+                            <select id="wa-broadcast-segment" onchange="prepareWaBroadcast()" class="w-full text-xs p-2.5 rounded-lg bg-dark-bg border border-dark-border text-white font-semibold focus:border-emerald-500">
+                                <option value="ALL">🌐 All Discovered Leads (B2B + B2C)</option>
+                                <option value="B2B">🏢 B2B Wholesalers & Dealers Only</option>
+                                <option value="B2C">🛍️ B2C Retail & Services Only</option>
+                                <option value="HOT">🔥 HOT Priority Leads Only</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Pitch Language</label>
+                            <select id="wa-broadcast-lang" onchange="prepareWaBroadcast()" class="w-full text-xs p-2.5 rounded-lg bg-dark-bg border border-dark-border text-white font-semibold focus:border-emerald-500">
+                                <option value="en">🇬🇧 English (Global / UAE / India)</option>
+                                <option value="ar">🇦🇪 Arabic (العربية - Dubai/GCC)</option>
+                                <option value="bilingual">🌐 Bilingual (English + Arabic Summary)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1">Batch Launch Delay</label>
+                            <select id="wa-broadcast-delay" class="w-full text-xs p-2.5 rounded-lg bg-dark-bg border border-dark-border text-white font-semibold focus:border-emerald-500">
+                                <option value="1500">⚡ 1.5s per chat (Fast)</option>
+                                <option value="3000" selected>🛡️ 3.0s per chat (Recommended Safe)</option>
+                                <option value="5000">🐢 5.0s per chat (Ultra Safe)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Summary Stats Card -->
+                    <div class="bg-slate-900 border border-dark-border p-4 rounded-xl grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+                        <div class="bg-dark-bg p-2.5 rounded-lg border border-dark-border">
+                            <span class="text-[10px] text-slate-400 block font-bold uppercase">Total Selected</span>
+                            <strong id="wa-stat-total" class="text-lg font-black text-white block mt-0.5">0</strong>
+                        </div>
+                        <div class="bg-dark-bg p-2.5 rounded-lg border border-dark-border">
+                            <span class="text-[10px] text-emerald-400 block font-bold uppercase">WhatsApp Phone</span>
+                            <strong id="wa-stat-phones" class="text-lg font-black text-emerald-400 block mt-0.5">0</strong>
+                        </div>
+                        <div class="bg-dark-bg p-2.5 rounded-lg border border-dark-border">
+                            <span class="text-[10px] text-indigo-400 block font-bold uppercase">B2B Leads</span>
+                            <strong id="wa-stat-b2b" class="text-lg font-black text-indigo-400 block mt-0.5">0</strong>
+                        </div>
+                        <div class="bg-dark-bg p-2.5 rounded-lg border border-dark-border">
+                            <span class="text-[10px] text-amber-400 block font-bold uppercase">B2C Leads</span>
+                            <strong id="wa-stat-b2c" class="text-lg font-black text-amber-400 block mt-0.5">0</strong>
+                        </div>
+                    </div>
+
+                    <!-- Live Progress Bar -->
+                    <div id="wa-broadcast-progress-container" class="hidden space-y-1.5 bg-slate-900 border border-emerald-500/30 p-3 rounded-xl">
+                        <div class="flex items-center justify-between text-xs">
+                            <span id="wa-progress-status" class="font-bold text-emerald-400">⚡ Mass WhatsApp Broadcast Active...</span>
+                            <span id="wa-progress-counter" class="font-mono font-bold text-white">0 / 0</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-dark-bg rounded-full overflow-hidden border border-dark-border">
+                            <div id="wa-progress-bar" class="h-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-300 w-0"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 text-center">
+                            💡 Each WhatsApp Web tab opens automatically with pre-filled pitch. Hit "Send" in WhatsApp tab.
+                        </p>
+                    </div>
+
+                    <!-- Target Leads Broadcast List Preview -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400">Broadcast Target Preview & Direct Links</label>
+                            <span class="text-[10px] text-slate-400">Click any row to open individually</span>
+                        </div>
+                        <div class="bg-dark-bg border border-dark-border rounded-lg max-h-48 overflow-y-auto divide-y divide-dark-border text-xs font-mono p-2" id="wa-broadcast-preview-list">
+                            <div class="text-center py-6 text-slate-500">Preparing WhatsApp target list...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Actions -->
+                <div class="px-6 py-4 bg-slate-900 border-t border-dark-border flex flex-wrap items-center justify-between gap-3">
+                    <button type="button" onclick="closeModal('modal-whatsapp-broadcast')" class="px-4 py-2 rounded-lg text-xs font-medium bg-dark-hover text-slate-300 hover:text-white transition-colors">
+                        Cancel
+                    </button>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button type="button" onclick="exportWhatsAppCSVFromModal()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-dark-border flex items-center gap-1">
+                            <span>📥 Export WA CSV</span>
+                        </button>
+                        <button type="button" onclick="copyAllWaPitches()" class="px-3.5 py-2 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-dark-border flex items-center gap-1">
+                            <span>📋 Copy All Pitches</span>
+                        </button>
+                        <button type="button" onclick="launchSequentialWaBroadcast()" id="btn-wa-auto-launch" class="px-5 py-2.5 rounded-xl text-xs font-black text-white bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 shadow-xl glow-emerald flex items-center gap-2 transform active:scale-95">
+                            <span>⚡ SEND ALL ON WHATSAPP NOW (1-CLICK)</span>
                         </button>
                     </div>
                 </div>
@@ -1278,6 +1410,8 @@
             const total = leads.length;
             const noWeb = leads.filter(l => l.website_status !== 'WEBSITE_WORKING').length;
             const b2b = leads.filter(l => l.business_type === 'B2B' || l.is_dealer_or_wholesale).length;
+            const b2c = leads.filter(l => l.business_type === 'B2C').length;
+            const wa = leads.filter(l => l.phone).length;
             const hot = leads.filter(l => l.lead_priority === 'HOT').length;
             const ceos = leads.filter(l => l.decision_maker_name || l.decision_maker_email).length;
             const contacted = leads.filter(l => l.contacted).length;
@@ -1286,6 +1420,10 @@
             document.getElementById('quick-total').textContent = total;
             document.getElementById('quick-no-web').textContent = noWeb;
             document.getElementById('quick-b2b').textContent = b2b;
+            const elB2C = document.getElementById('quick-b2c');
+            if (elB2C) elB2C.textContent = b2c;
+            const elWA = document.getElementById('quick-wa');
+            if (elWA) elWA.textContent = wa;
 
             document.getElementById('stat-total').textContent = total;
             document.getElementById('stat-no-website').textContent = noWeb;
@@ -2107,6 +2245,147 @@
                 alert(`Error: ${err.message}`);
                 loadLeads();
             }
+        }
+
+        let activeWaBroadcastList = [];
+
+        async function openWhatsAppBroadcastModal() {
+            openModal('modal-whatsapp-broadcast');
+            await prepareWaBroadcast();
+        }
+
+        async function prepareWaBroadcast() {
+            const segment = document.getElementById('wa-broadcast-segment').value || 'ALL';
+            const lang = document.getElementById('wa-broadcast-lang').value || 'en';
+            const listEl = document.getElementById('wa-broadcast-preview-list');
+
+            listEl.innerHTML = `<div class="text-center py-6 text-slate-500"><div class="inline-block w-5 h-5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mb-1"></div><p>Preparing WhatsApp mass broadcast list...</p></div>`;
+
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/whatsapp-broadcast`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        business_type: segment,
+                        language: lang,
+                        mark_as_contacted: false
+                    })
+                });
+                const data = await res.json();
+                activeWaBroadcastList = data.broadcast_list || [];
+
+                document.getElementById('wa-stat-total').textContent = data.total_targets || 0;
+                document.getElementById('wa-stat-phones').textContent = data.total_with_phone || 0;
+                document.getElementById('wa-stat-b2b').textContent = data.b2b_count || 0;
+                document.getElementById('wa-stat-b2c').textContent = data.b2c_count || 0;
+
+                if (!activeWaBroadcastList.length) {
+                    listEl.innerHTML = `<div class="text-center py-6 text-amber-400 font-semibold">⚠️ No valid phone numbers found for this segment. Scan more leads first!</div>`;
+                    return;
+                }
+
+                let html = '';
+                activeWaBroadcastList.forEach((item, idx) => {
+                    html += `
+                        <div class="py-2 px-3 flex flex-wrap items-center justify-between gap-2 hover:bg-slate-900/80 transition-colors">
+                            <div class="truncate max-w-xs">
+                                <span class="font-bold text-white">${idx + 1}. ${escapeHtml(item.business_name)}</span>
+                                <span class="ml-2 text-[10px] px-1.5 py-0.2 rounded ${item.business_type === 'B2C' ? 'bg-amber-500/20 text-amber-300' : 'bg-indigo-500/20 text-indigo-300'} font-bold">${item.business_type}</span>
+                                <div class="text-[10px] text-slate-400 font-mono">${escapeHtml(item.phone)} (${escapeHtml(item.city)})</div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <a href="${item.whatsapp_url}" target="_blank" class="px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold shadow flex items-center gap-1">
+                                    <span>💬 Chat (1-Click)</span>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+                listEl.innerHTML = html;
+            } catch (err) {
+                listEl.innerHTML = `<div class="text-center py-6 text-rose-400 font-semibold">Error preparing broadcast: ${escapeHtml(err.message)}</div>`;
+            }
+        }
+
+        async function launchSequentialWaBroadcast() {
+            if (!activeWaBroadcastList || !activeWaBroadcastList.length) {
+                alert('No WhatsApp contacts ready to send. Please select a segment with available phone numbers.');
+                return;
+            }
+
+            const btn = document.getElementById('btn-wa-auto-launch');
+            btn.disabled = true;
+
+            const progressContainer = document.getElementById('wa-broadcast-progress-container');
+            const progressBar = document.getElementById('wa-progress-bar');
+            const progressCounter = document.getElementById('wa-progress-counter');
+            const progressStatus = document.getElementById('wa-progress-status');
+            const delayMs = parseInt(document.getElementById('wa-broadcast-delay').value) || 3000;
+
+            progressContainer.classList.remove('hidden');
+            progressStatus.textContent = '⚡ Mass Dispatch Active: Launching WhatsApp chats...';
+
+            let count = 0;
+            const total = activeWaBroadcastList.length;
+
+            // Mark contacts on server
+            const segment = document.getElementById('wa-broadcast-segment').value || 'ALL';
+            const lang = document.getElementById('wa-broadcast-lang').value || 'en';
+
+            try {
+                await fetch(`${window.API_BASE}/leads/whatsapp-broadcast`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        business_type: segment,
+                        language: lang,
+                        mark_as_contacted: true
+                    })
+                });
+            } catch (e) {
+                console.warn('Mark contacted background error:', e);
+            }
+
+            for (let i = 0; i < total; i++) {
+                const item = activeWaBroadcastList[i];
+                count++;
+                
+                const percent = Math.round((count / total) * 100);
+                progressBar.style.width = `${percent}%`;
+                progressCounter.textContent = `${count} / ${total}`;
+                progressStatus.textContent = `⚡ (${count}/${total}) Dispatching to ${item.business_name}...`;
+
+                window.open(item.whatsapp_url, '_blank');
+
+                if (i < total - 1) {
+                    await new Promise(r => setTimeout(r, delayMs));
+                }
+            }
+
+            progressStatus.textContent = `✅ Complete! ${count} WhatsApp chats launched in sequence!`;
+            alert(`🎉 Success! Launched WhatsApp outreach for all ${count} businesses. All leads marked as Contacted in DB.`);
+            btn.disabled = false;
+            loadLeads();
+        }
+
+        function exportWhatsAppCSVFromModal() {
+            const segment = document.getElementById('wa-broadcast-segment').value || 'ALL';
+            const lang = document.getElementById('wa-broadcast-lang').value || 'en';
+            window.open(`${window.API_BASE}/leads/export/whatsapp-csv?business_type=${segment}&language=${lang}`, '_blank');
+        }
+
+        function copyAllWaPitches() {
+            if (!activeWaBroadcastList || !activeWaBroadcastList.length) {
+                alert('No pitches ready to copy.');
+                return;
+            }
+            let combined = activeWaBroadcastList.map((item, idx) => {
+                return `========================================\n#${idx + 1}: ${item.business_name} (${item.business_type}) | Phone: ${item.phone}\nWhatsApp Link: ${item.whatsapp_url}\n----------------------------------------\n${item.pitch_text}\n`;
+            }).join('\n\n');
+
+            navigator.clipboard.writeText(combined).then(() => {
+                alert(`📋 Copied all ${activeWaBroadcastList.length} customized WhatsApp pitches to clipboard!`);
+            });
         }
 
         function escapeHtml(str) {

@@ -535,6 +535,8 @@ def get_data_vault_stats(db: Session) -> Dict[str, Any]:
     total_records = db.query(func.count(Business.id)).scalar() or 0
     no_website = db.query(func.count(Business.id)).filter(Business.website_status != "WEBSITE_WORKING").scalar() or 0
     b2b_dealers = db.query(func.count(Business.id)).filter(or_(Business.business_type == "B2B", Business.is_dealer_or_wholesale == True)).scalar() or 0
+    b2c_retail = db.query(func.count(Business.id)).filter(Business.business_type == "B2C").scalar() or 0
+    whatsapp_ready = db.query(func.count(Business.id)).filter(or_(Business.phone.isnot(None), Business.phone_normalized.isnot(None))).scalar() or 0
     ceos_found = db.query(func.count(Business.id)).filter(or_(Business.decision_maker_name.isnot(None), Business.decision_maker_email.isnot(None))).scalar() or 0
     contacted = db.query(func.count(Business.id)).filter(Business.contacted == True).scalar() or 0
 
@@ -554,6 +556,8 @@ def get_data_vault_stats(db: Session) -> Dict[str, Any]:
         "total_records": total_records,
         "no_website": no_website,
         "b2b_dealers": b2b_dealers,
+        "b2c_retail": b2c_retail,
+        "whatsapp_ready": whatsapp_ready,
         "ceos_found": ceos_found,
         "contacted": contacted,
         "city_counts": city_counts,
