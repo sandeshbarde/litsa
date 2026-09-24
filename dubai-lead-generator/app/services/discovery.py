@@ -360,9 +360,10 @@ class DiscoveryService:
             if gemini_result:
                 website_quality = gemini_result.get("website_quality")
 
-        # Stage 4: Executive Contact Discovery
+        # Stage 4: Executive Contact Discovery & Email Guesser Fallback
         logger.info(f"[STAGE 4: CONTACT DISCOVERY] Finding executive contact for '{name}'...")
         from app.services.contact_provider import contact_discovery_engine
+        from app.services.email_guesser import email_guesser
         from app.utils.normalization import extract_domain
 
         extracted_domain = extract_domain(verified_url or website)
@@ -375,17 +376,32 @@ class DiscoveryService:
         email_found = None
         decision_maker_name = None
         decision_maker_title = None
+        contact_channel_val = "email"
 
         if discovered_contact and discovered_contact.get("email"):
             email_found = discovered_contact.get("email")
             decision_maker_name = discovered_contact.get("name")
             decision_maker_title = discovered_contact.get("title")
             contact_status_val = "discovered"
+            contact_channel_val = "email"
         elif raw.get("email"):
             email_found = raw.get("email")
             contact_status_val = "discovered"
+            contact_channel_val = "email"
         else:
-            contact_status_val = "manual_research_needed"
+            # Fallback 3: Direct SMTP Email Guesser & Phone Channel Routing
+            guessed_email, channel, guess_meta = email_guesser.discover_contact(
+                business_name=name,
+                website=verified_url or website,
+                phone=phone,
+            )
+            if guessed_email:
+                email_found = guessed_email
+                contact_status_val = "discovered"
+                contact_channel_val = "email"
+            else:
+                contact_status_val = "manual_research_needed"
+                contact_channel_val = channel
 
         loc_meta = get_location_meta(city, fallback_country=country)
 
@@ -408,6 +424,7 @@ class DiscoveryService:
             "phone": phone,
             "phone_normalized": phone_norm,
             "email": email_found,
+            "contact_channel": contact_channel_val,
             "decision_maker_name": decision_maker_name,
             "decision_maker_title": decision_maker_title,
             "decision_maker_email": email_found,

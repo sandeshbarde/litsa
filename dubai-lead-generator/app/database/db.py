@@ -68,6 +68,14 @@ def init_db() -> None:
             logger.info("Added missing 'state' column to businesses table.")
         except Exception:
             pass
+
+        try:
+            from sqlalchemy import text
+            conn.execute(text("ALTER TABLE businesses ADD COLUMN contact_channel VARCHAR DEFAULT 'email'"))
+            conn.commit()
+            logger.info("Added missing 'contact_channel' column to businesses table.")
+        except Exception:
+            pass
     logger.info("Database initialized.")
 
 

@@ -24,11 +24,36 @@ WEBSITE_STATUS = {
     "REDIRECT": "REDIRECT",
     "PARKED_DOMAIN": "PARKED_DOMAIN",
     "SOCIAL_ONLY": "SOCIAL_ONLY",
+    "WEAK_DIY": "WEAK_DIY",
     "DIRECTORY_ONLY": "DIRECTORY_ONLY",
     "UNREACHABLE": "UNREACHABLE",
     "SSL_ERROR": "SSL_ERROR",
     "WEBSITE_UNCLEAR": "WEBSITE_UNCLEAR",
 }
+
+WEAK_DIY_DOMAINS = [
+    "instagram.com",
+    "facebook.com",
+    "fb.com",
+    "linktr.ee",
+    "hi.link",
+    "replit.app",
+    "canva.site",
+    "wixsite.com",
+    "wordpress.com",
+    "site123.me",
+    "mystrikingly.com",
+    "carrd.co",
+    "myshopify.com",
+    "blogspot.com",
+]
+
+
+def is_weak_diy_domain(url: str) -> bool:
+    if not url:
+        return False
+    url_lower = url.lower()
+    return any(domain in url_lower for domain in WEAK_DIY_DOMAINS)
 
 PARKED_INDICATORS = [
     "domain for sale",
@@ -117,6 +142,9 @@ class VerificationService:
 
         if is_social_only_domain(normalized):
             return WEBSITE_STATUS["SOCIAL_ONLY"], normalized, None
+
+        if is_weak_diy_domain(normalized):
+            return WEBSITE_STATUS["WEAK_DIY"], normalized, None
 
         if is_directory_domain(normalized):
             return WEBSITE_STATUS["DIRECTORY_ONLY"], normalized, None

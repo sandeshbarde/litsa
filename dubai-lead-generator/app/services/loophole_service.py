@@ -47,6 +47,27 @@ INDUSTRY_LOOPHOLES = {
         "website_blueprint": "Instant Direct Booking Engine with service menu, pricing, real-time slot selection, Google Maps integration, and zero commission fee.",
         "pitch_angle": "Customers ready to book outside business hours cannot do so online, resulting in lost bookings every single night."
     },
+    "cafe_restaurant": {
+        "title": "Lost Online Orders, Missing Search Menu & Delivery Commission Bleed",
+        "description": "Diners search online for menus, reservations, and direct delivery. Having no website means you have zero visible search menu on Google, lost table reservations, and 15-30% revenue bleed to third-party delivery aggregators.",
+        "revenue_leak": "Estimated $6,000 - $18,000 monthly in lost direct online orders & delivery app commission fees.",
+        "website_blueprint": "Fast Mobile Dining Website with digital interactive menu, direct WhatsApp/online table booking, direct ordering portal (0% commission), and Google Maps integration.",
+        "pitch_angle": "Diners searching for your menu and online delivery are placing orders elsewhere or losing 20%+ of ticket value to third-party delivery apps."
+    },
+    "gym_fitness": {
+        "title": "No 24/7 Class Booking, Missing Membership Signup & Lost New Year Surge",
+        "description": "Fitness enthusiasts and new members research gyms online and want instant trial signups and class schedules. Without a landing page, you miss high-margin membership surges and evening impulse signups.",
+        "revenue_leak": "Estimated $5,000 - $15,000 monthly in lost membership signups and class passes.",
+        "website_blueprint": "High-Converting Fitness Portal featuring class timetables, 1-click free trial pass signup, trainer bios, member success stories, and instant membership checkout.",
+        "pitch_angle": "Prospective members looking to sign up or check your class schedule online cannot do so, sending new memberships to rival fitness centers."
+    },
+    "hospitality": {
+        "title": "Zero Direct Bookings & 15-25% OTA Commission Extortion",
+        "description": "Hotels, venues, and travel agencies without an official website rely 100% on OTAs (Booking.com/Agoda) paying 15-25% commission per room/event, and cannot showcase private event spaces or corporate group packages directly.",
+        "revenue_leak": "Estimated $12,000 - $40,000 monthly in OTA commission fees and missed direct corporate event bookings.",
+        "website_blueprint": "Direct Reservation & Event Showcase Website with instant room/venue availability, direct booking checkout, corporate package request form, and 360 virtual tour gallery.",
+        "pitch_angle": "Corporate event organizers and guests booking rooms pay high OTA commissions or choose venues with verified direct booking portals."
+    },
     "general": {
         "title": "Zero Google Discovery & Total Digital Invisibility",
         "description": "Customers actively looking for your exact services in your area find competitor websites with official links and clear offers. Without an official domain, your high Google rating and customer loyalty fail to convert into new inbound clients.",
@@ -101,7 +122,16 @@ class LoopholeResearchService:
         b_type = classification["business_type"]
 
         # Select loophole pattern
-        if any(k in combined for k in ["auto", "spare parts", "car parts"]):
+        if any(k in combined for k in ["cafe", "restaurant", "bakery", "cloud kitchen", "juice bar", "dining", "food"]):
+            pattern = INDUSTRY_LOOPHOLES["cafe_restaurant"]
+            industry_label = "Cafe, Restaurant & Culinary"
+        elif any(k in combined for k in ["gym", "fitness", "yoga", "crossfit", "workout"]):
+            pattern = INDUSTRY_LOOPHOLES["gym_fitness"]
+            industry_label = "Gym & Fitness Studio"
+        elif any(k in combined for k in ["hotel", "guest house", "banquet", "event venue", "travel agency", "resort"]):
+            pattern = INDUSTRY_LOOPHOLES["hospitality"]
+            industry_label = "Hospitality, Venues & Travel"
+        elif any(k in combined for k in ["auto", "spare parts", "car parts"]):
             pattern = INDUSTRY_LOOPHOLES["auto_spare_parts"]
             industry_label = "Automotive & Spare Parts Distribution"
         elif any(k in combined for k in ["wholesale", "distributor", "supplier", "trading", "dealer"]):
@@ -110,9 +140,9 @@ class LoopholeResearchService:
         elif any(k in combined for k in ["contractor", "construction", "mep", "engineering"]):
             pattern = INDUSTRY_LOOPHOLES["industrial_contracting"]
             industry_label = "Industrial & Commercial Contracting"
-        elif any(k in combined for k in ["salon", "spa", "barber", "restaurant", "cafe", "clinic", "dental"]):
+        elif any(k in combined for k in ["salon", "spa", "barber", "nail", "beauty", "clinic", "dental"]):
             pattern = INDUSTRY_LOOPHOLES["services_dining_salon"]
-            industry_label = "Local Services & Hospitality"
+            industry_label = "Local Services & Personal Care"
         elif any(k in combined for k in ["jewel", "luxury", "perfume", "fashion", "boutique", "watch"]):
             pattern = INDUSTRY_LOOPHOLES["retail_luxury"]
             industry_label = "High-End Retail & Luxury"

@@ -268,6 +268,18 @@ class EmailAutomationService:
             else:
                 logger.info(f"ZeroBounce hygiene passed for {recipient_email}: status={status_reason} ({sub_status})")
 
+        import re
+        def _strip_html(val: str) -> str:
+            if not val:
+                return ""
+            t = re.sub(r'<br\s*/?>', '\n', val, flags=re.IGNORECASE)
+            t = re.sub(r'</p>', '\n\n', t, flags=re.IGNORECASE)
+            t = re.sub(r'<[^>]+>', '', t)
+            return '\n'.join(line.strip() for line in t.splitlines()).strip()
+
+        plain_text_body = _strip_html(body_text) if ("<" in body_text and ">" in body_text) else body_text
+        html_body = body_text if ("<p>" in body_text or "<br>" in body_text or "<div>" in body_text) else body_text.replace("\n", "<br>")
+
         # Safe Test Mode
         target_to = recipient_email
         if settings.provider_test_mode:
@@ -277,7 +289,7 @@ class EmailAutomationService:
 
         from_header = f"{settings.email_from_name or DEVELOPER_NAME} <{settings.email_from_address or 'onboarding@resend.dev'}>"
 
-        # PRIMARY CHANNEL: Resend API (HTTP)
+        # PRIMARY CHANNEL: Resend API (HTTP with Multipart HTML + Text)
         resend_key = getattr(settings, "resend_api_key", "")
         if resend_key and resend_key.startswith("re_"):
             try:
@@ -289,7 +301,8 @@ class EmailAutomationService:
                     "from": from_header,
                     "to": [target_to],
                     "subject": subject,
-                    "text": body_text,
+                    "html": html_body,
+                    "text": plain_text_body,
                     "reply_to": settings.reply_to or None,
                 }
                 resp = requests.post("https://api.resend.com/emails", headers=headers, json=payload, timeout=10)
@@ -302,18 +315,20 @@ class EmailAutomationService:
             except Exception as e:
                 logger.warning(f"Resend Primary Channel exception: {e}. Falling back to emergency SMTP...")
 
-        # EMERGENCY FALLBACK: Standard SMTP (Gmail App Password)
+        # EMERGENCY FALLBACK: Standard SMTP (Gmail App Password with MIMEMultipart Alternative)
         smtp_user = settings.smtp_username
         smtp_pass = settings.smtp_password
         if smtp_user and smtp_pass and smtp_user != "YOUR_EMAIL" and smtp_pass not in ["YOUR_APP_PASSWORD", "YOUR_GOOGLE_APP_PASSWORD"]:
             try:
-                msg = MIMEMultipart()
+                msg = MIMEMultipart("alternative")
                 msg["From"] = f"{settings.email_from_name or DEVELOPER_NAME} <{smtp_user}>"
                 msg["To"] = target_to
                 msg["Subject"] = subject
                 if settings.reply_to:
                     msg["Reply-To"] = settings.reply_to
-                msg.attach(MIMEText(body_text, "plain", "utf-8"))
+
+                msg.attach(MIMEText(plain_text_body, "plain", "utf-8"))
+                msg.attach(MIMEText(html_body, "html", "utf-8"))
 
                 host = settings.smtp_host or "smtp.gmail.com"
                 port = settings.smtp_port or 587

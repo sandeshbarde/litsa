@@ -109,6 +109,7 @@ class Business(Base):
     contacted = Column(Boolean, default=False)
     contact_date = Column(DateTime, nullable=True)
     contact_status = Column(String, nullable=True)
+    contact_channel = Column(String, default="email")  # email or phone
     sequence_stage = Column(String, default="NOT_STARTED")  # NOT_STARTED, STEP1_SENT, STEP2_SENT, STEP3_SENT, REPLIED
     next_action_due = Column(DateTime, nullable=True)
     response = Column(Text, nullable=True)
@@ -183,6 +184,7 @@ class Business(Base):
             "contacted": self.contacted,
             "contact_date": self.contact_date.isoformat() if self.contact_date else None,
             "contact_status": self.contact_status,
+            "contact_channel": self.contact_channel or "email",
             "sequence_stage": self.sequence_stage or "NOT_STARTED",
             "next_action_due": self.next_action_due.isoformat() if self.next_action_due else None,
             "response": self.response,
@@ -387,6 +389,39 @@ class DemoInteraction(Base):
             "business_id": self.business_id,
             "interaction_type": self.interaction_type,
             "meta_data": self.meta_data,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+        }
+
+
+class OutreachQueue(Base):
+    """Outreach queue for automated scheduling, follow-ups, and channel routing."""
+
+    __tablename__ = "outreach_queue"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    business_id = Column(String, ForeignKey("businesses.id"), nullable=False, index=True)
+    channel = Column(String, default="email")  # email or phone
+    recipient = Column(String, nullable=True)
+    status = Column(String, default="PENDING")  # PENDING, PROCESSING, SENT, COMPLETED, FAILED
+    scheduled_at = Column(DateTime, default=datetime.utcnow)
+    follow_up_date = Column(DateTime, nullable=True)
+    sequence_step = Column(Integer, default=1)
+    notes = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+    business = relationship("Business")
+
+    def to_dict(self) -> dict:
+        return {
+            "id": self.id,
+            "business_id": self.business_id,
+            "channel": self.channel,
+            "recipient": self.recipient,
+            "status": self.status,
+            "scheduled_at": self.scheduled_at.isoformat() if self.scheduled_at else None,
+            "follow_up_date": self.follow_up_date.isoformat() if self.follow_up_date else None,
+            "sequence_step": self.sequence_step,
+            "notes": self.notes,
             "created_at": self.created_at.isoformat() if self.created_at else None,
         }
 

@@ -115,6 +115,25 @@ categories:
   - barbershops
   - restaurants
   - real estate agencies
+  # Expanded Multi-Vertical Categories (Salons, Dining, Fitness, Hospitality, Travel)
+  - beauty salons
+  - hair salons
+  - unisex salons
+  - spa and massage centers
+  - nail studios
+  - cafes
+  - bakeries
+  - cloud kitchens
+  - juice bars
+  - gyms
+  - fitness studios
+  - yoga studios
+  - crossfit boxes
+  - boutique hotels
+  - guest houses
+  - banquet halls
+  - event venues
+  - travel agencies
 
 lead_scoring:
   no_website: 50
@@ -141,8 +160,8 @@ sheets:
   batch_size: 50
 
 scheduler:
-  enabled: false
-  cron: "0 10 * * *"  # 10:00 AM daily
+  enabled: true
+  cron: "0 6 * * *"  # 6:00 AM daily
 
 logging:
   level: INFO

@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     tomba_secret_key: Optional[str] = Field(default=None)
     anthropic_api_key: Optional[str] = Field(default=None)
     apify_api_token: Optional[str] = Field(default=None)
+    google_places_api_key: Optional[str] = Field(default=None)
 
     # Email Warmup & Daily Limits
     max_emails_per_day: int = Field(default=50)
@@ -140,6 +141,13 @@ class Settings(BaseSettings):
             self.apify_api_token
             and self.apify_api_token.strip()
             and not self.apify_api_token.startswith("YOUR_")
+        )
+
+    def has_google_places(self) -> bool:
+        return bool(
+            self.google_places_api_key
+            and self.google_places_api_key.strip()
+            and not self.google_places_api_key.startswith("YOUR_")
         )
 
     def safe_repr(self) -> dict:

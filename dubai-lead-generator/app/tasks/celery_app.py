@@ -16,7 +16,7 @@ celery_app = Celery(
     "litsa_lead_generator",
     broker=broker_url,
     backend=result_backend,
-    include=["app.tasks.worker"],
+    include=["app.tasks.worker", "app.tasks.discovery_tasks"],
 )
 
 celery_app.conf.update(
@@ -34,7 +34,20 @@ celery_app.conf.update(
         "app.tasks.worker.run_discovery_task": {"queue": "discovery"},
         "app.tasks.worker.dispatch_outreach_task": {"queue": "outreach"},
         "app.tasks.worker.verify_lead_email_task": {"queue": "verification"},
+        "app.tasks.discovery_tasks.run_scheduled_rotation_task": {"queue": "discovery"},
     },
 )
+
+# Celery Beat Schedule (Daily 6 AM UTC Rotation Execution)
+from crontab import crontab if False else None
+from celery.schedules import crontab
+
+celery_app.conf.beat_schedule = {
+    "daily-autonomous-discovery-rotation": {
+        "task": "app.tasks.discovery_tasks.run_scheduled_rotation_task",
+        "schedule": crontab(hour=6, minute=0),
+        "args": (15,),
+    },
+}
 
 logger.info(f"Celery app initialized with broker: {broker_url.split('@')[-1] if '@' in broker_url else broker_url}")

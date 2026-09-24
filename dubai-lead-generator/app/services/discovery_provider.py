@@ -297,6 +297,100 @@ class FallbackB2BProvider(LeadDiscoveryProvider):
         return results, meta
 
 
+class GooglePlacesProvider(LeadDiscoveryProvider):
+    """
+    Google Places API 'Text Search (New)' engine implementation (places.googleapis.com/v1/places:searchText).
+    Requests websiteUri directly from the API response so no-website detection happens at request time.
+    """
+
+    @property
+    def name(self) -> str:
+        return "google_places"
+
+    def is_configured(self) -> bool:
+        return settings.has_google_places()
+
+    def search_businesses(
+        self,
+        query: str,
+        google_gl: str = "ae",
+        google_hl: str = "en",
+        limit: int = 20,
+    ) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        start_time = time.time()
+        url = "https://places.googleapis.com/v1/places:searchText"
+        headers = {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": settings.google_places_api_key or "",
+            "X-Goog-FieldMask": "places.id,places.displayName,places.formattedAddress,places.nationalPhoneNumber,places.internationalPhoneNumber,places.websiteUri,places.rating,places.userRatingCount,places.googleMapsUri,places.primaryType",
+        }
+        payload = {
+            "textQuery": query,
+            "pageSize": min(limit, 20),
+            "languageCode": google_hl or "en",
+        }
+        if google_gl:
+            payload["regionCode"] = google_gl.upper()
+
+        try:
+            resp = requests.post(url, headers=headers, json=payload, timeout=15)
+            latency = round(time.time() - start_time, 2)
+            if resp.status_code == 200:
+                data = resp.json()
+                raw_places = data.get("places", [])
+                normalized_results = []
+                for p in raw_places:
+                    name_obj = p.get("displayName") or {}
+                    b_name = name_obj.get("text") or ""
+                    if not b_name:
+                        continue
+                    website_uri = p.get("websiteUri")
+                    b_rating = p.get("rating")
+                    b_reviews = p.get("userRatingCount") or 0
+
+                    normalized_results.append({
+                        "business_name": b_name,
+                        "title": b_name,
+                        "place_id": p.get("id"),
+                        "data_id": p.get("id"),
+                        "type": p.get("primaryType"),
+                        "address": p.get("formattedAddress"),
+                        "phone": p.get("internationalPhoneNumber") or p.get("nationalPhoneNumber"),
+                        "website": website_uri,
+                        "rating": b_rating,
+                        "reviews": b_reviews,
+                        "google_rating": b_rating,
+                        "google_review_count": b_reviews,
+                        "link": p.get("googleMapsUri"),
+                        "source": self.name,
+                    })
+
+                meta = {
+                    "provider": self.name,
+                    "success": True,
+                    "latency_seconds": latency,
+                    "results_count": len(normalized_results),
+                    "estimated_credits": 1,
+                }
+                return normalized_results, meta
+            else:
+                err_msg = f"HTTP {resp.status_code}: {resp.text[:200]}"
+                return [], {
+                    "provider": self.name,
+                    "success": False,
+                    "latency_seconds": latency,
+                    "error": err_msg,
+                }
+        except Exception as exc:
+            latency = round(time.time() - start_time, 2)
+            return [], {
+                "provider": self.name,
+                "success": False,
+                "latency_seconds": latency,
+                "error": str(exc),
+            }
+
+
 class ResilientDiscoveryEngine:
     """Orchestrates primary and fallback discovery providers."""
 
@@ -306,6 +400,8 @@ class ResilientDiscoveryEngine:
             self.providers.append(ApifyProvider())
         if settings.has_serpapi():
             self.providers.append(SerpApiProvider())
+        if settings.has_google_places():
+            self.providers.append(GooglePlacesProvider())
         # Guaranteed fallback provider ensures non-zero discovery when scrapers hit 403/429 limit
         self.providers.append(FallbackB2BProvider())
 

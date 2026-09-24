@@ -40,8 +40,8 @@ class LeadScoringService:
         breakdown: Dict[str, int] = {}
         score = 0
 
-        # No verified website
-        if website_status in ("NO_WEBSITE", "SOCIAL_ONLY", "DIRECTORY_ONLY", "WEBSITE_BROKEN"):
+        # No verified standalone custom website (missing, social link, weak DIY, or broken)
+        if website_status in ("NO_WEBSITE", "SOCIAL_ONLY", "WEAK_DIY", "DIRECTORY_ONLY", "WEBSITE_BROKEN", "WEBSITE_DOWN", "UNREACHABLE"):
             breakdown["no_website"] = self.weights["no_website"]
             score += self.weights["no_website"]
 
