@@ -53,7 +53,10 @@ class ApifyService:
             logger.warning("Apify API token not configured; skipping Apify discovery.")
             return []
 
-        search_string = f"{query} in {city}"
+        if city.lower() in query.lower() or " in " in query.lower():
+            search_string = query
+        else:
+            search_string = f"{query} in {city}"
         logger.info(f"Starting Apify Google Maps run for: '{search_string}' (max {max_items})")
 
         actor_url = f"{self.BASE_URL}/acts/{self.ACTOR_ID}/run-sync-get-dataset-items?token={self.api_token}&timeout={timeout}"
@@ -99,12 +102,13 @@ class ApifyService:
                 logger.info(f"Apify filtered {len(filtered_leads)} qualified NO-WEBSITE targets.")
                 return filtered_leads
             else:
-                logger.warning(f"Apify actor call returned status {resp.status_code}: {resp.text[:200]}")
-                return []
+                err_msg = f"Apify HTTP {resp.status_code}: {resp.text[:200]}"
+                logger.warning(f"Apify actor call returned error: {err_msg}")
+                raise RuntimeError(err_msg)
 
         except Exception as exc:
             logger.error(f"Apify scrape execution error: {exc}")
-            return []
+            raise exc
 
 
 apify_service = ApifyService()

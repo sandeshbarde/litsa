@@ -227,7 +227,6 @@ class SnovService:
         # 2. SerpApi LinkedIn Executive Search fallback
         if settings.has_serpapi():
             try:
-                from serpapi import GoogleSearch
                 query = f'"{business_name}" "{city}" (CEO OR "Managing Director" OR Founder OR Owner) site:linkedin.com/in/'
                 params = {
                     "engine": "google",
@@ -235,9 +234,12 @@ class SnovService:
                     "api_key": settings.serpapi_api_key,
                     "num": 3,
                 }
-                search = GoogleSearch(params)
-                res = search.get_dict()
-                organic = res.get("organic_results", [])
+                resp = requests.get("https://serpapi.com/search.json", params=params, timeout=10)
+                if resp.status_code == 200:
+                    res = resp.json()
+                    organic = res.get("organic_results", [])
+                else:
+                    organic = []
                 for item in organic:
                     title_str = item.get("title", "")
                     # Example: "Ahmed Al Qasimi - CEO - Al Quoz Trading | LinkedIn"

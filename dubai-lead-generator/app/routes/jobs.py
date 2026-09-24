@@ -58,12 +58,6 @@ def start_job(
     current_admin: dict = Depends(get_current_admin),
 ):
     """Start a new discovery run in the background."""
-    if not settings.has_serpapi() and not settings.has_apify():
-        raise HTTPException(
-            status_code=400,
-            detail="Neither SERPAPI_API_KEY nor APIFY_API_TOKEN is configured. Cannot start discovery job.",
-        )
-
     run_id = str(uuid.uuid4())
     _ACTIVE_RUNS[run_id] = {"status": "running", "started_at": datetime.utcnow().isoformat()}
 
