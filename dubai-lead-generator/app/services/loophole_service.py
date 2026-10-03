@@ -85,21 +85,43 @@ class LoopholeResearchService:
         pass
 
     def classify_business_type(self, name: str, category: str, description: Optional[str] = None) -> Dict[str, Any]:
-        """Classify business as B2B Wholesale/Dealer or B2C Retail/Service."""
+        """Classify business as B2B Wholesale/Dealer or B2C Retail/Service accurately."""
         combined_text = f"{name} {category} {description or ''}".lower()
 
-        b2b_keywords = [
-            "wholesale", "trading", "distributor", "supplier", "industrial",
-            "dealer", "equipment", "hardware", "building materials", "spare parts",
-            "machinery", "chemicals", "packaging", "commercial", "logistics",
-            "import", "export", "llc", "fze", "general trading"
+        b2c_keywords = [
+            "salon", "barber", "spa", "clinic", "dental", "medical", "restaurant",
+            "cafe", "bakery", "dining", "food", "gym", "fitness", "yoga", "crossfit",
+            "jewellery", "jewelry", "perfume", "boutique", "hotel", "resort", "guest house",
+            "garage", "auto repair", "car wash", "beauty", "hair", "nail", "tailor",
+            "cleaning", "laundry", "pet", "school", "nursery", "store", "shop",
+            "optics", "pharmacy", "studio", "retail", "fashion", "flower", "florist",
+            "supermarket", "grocery", "massage", "physiotherapy", "dermatology",
+            "catering", "bistro", "lounge", "wellness"
         ]
 
-        is_b2b = any(kw in combined_text for kw in b2b_keywords)
-        is_dealer = any(kw in combined_text for kw in ["dealer", "wholesale", "distributor", "supplier", "trading"])
+        b2b_keywords = [
+            "wholesale", "wholesaler", "distributor", "supplier", "industrial",
+            "building materials", "heavy machinery", "machinery", "chemicals",
+            "packaging materials", "commercial kitchen equipment", "b2b",
+            "general trading", "import and export", "manufacture"
+        ]
+
+        is_b2c = any(kw in combined_text for kw in b2c_keywords)
+        is_explicit_b2b = any(kw in combined_text for kw in ["wholesale", "distributor", "supplier", "industrial", "heavy machinery", "building materials"])
+        is_dealer = any(kw in combined_text for kw in ["dealer", "wholesale", "distributor", "supplier"])
+
+        if is_b2c and not is_explicit_b2b:
+            b_type = "B2C"
+        elif any(kw in combined_text for kw in b2b_keywords):
+            b_type = "B2B"
+        elif is_b2c:
+            b_type = "B2C"
+        else:
+            is_b2b_secondary = any(kw in combined_text for kw in ["trading", "dealer", "equipment", "hardware", "spare parts", "logistics", "export"])
+            b_type = "B2B" if is_b2b_secondary else "B2C"
 
         return {
-            "business_type": "B2B" if is_b2b else "B2C",
+            "business_type": b_type,
             "is_dealer_or_wholesale": is_dealer,
         }
 

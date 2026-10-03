@@ -1158,6 +1158,43 @@ def search_stored_data(
     }
 
 
+@router.post("/reclassify")
+def reclassify_all_leads(db: Session = Depends(get_db)):
+    """Re-classify all stored leads using updated B2C / B2B keyword rules."""
+    from app.models import Business
+    from app.services.loophole_service import loophole_service
+    businesses = db.query(Business).all()
+    updated_count = 0
+    b2c_count = 0
+    b2b_count = 0
+
+    for biz in businesses:
+        res = loophole_service.classify_business_type(
+            name=biz.business_name or "",
+            category=biz.category or "",
+            description=biz.description or "",
+        )
+        new_type = res["business_type"]
+        is_dealer = res["is_dealer_or_wholesale"]
+        if biz.business_type != new_type or biz.is_dealer_or_wholesale != is_dealer:
+            biz.business_type = new_type
+            biz.is_dealer_or_wholesale = is_dealer
+            updated_count += 1
+        if new_type == "B2C":
+            b2c_count += 1
+        else:
+            b2b_count += 1
+
+    db.commit()
+    return {
+        "success": True,
+        "total_records": len(businesses),
+        "reclassified_updated": updated_count,
+        "b2c_total": b2c_count,
+        "b2b_total": b2b_count,
+    }
+
+
 def clean_phone_for_whatsapp(phone: Optional[str]) -> str:
     if not phone:
         return ""

@@ -457,8 +457,21 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-300 mb-1">Target Categories (B2B Dealers & Services)</label>
-                            <textarea id="ctrl-categories" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading, electrical suppliers wholesale, textile wholesale</textarea>
+                            <div class="flex items-center justify-between mb-1">
+                                <label class="block text-xs font-semibold text-slate-300">Target Categories</label>
+                                <div class="flex items-center gap-1.5 text-[10px]">
+                                    <button type="button" onclick="setPresetCategories('B2C')" class="px-2 py-0.5 rounded font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition-all flex items-center gap-1">
+                                        <span>🛍️ B2C Preset</span>
+                                    </button>
+                                    <button type="button" onclick="setPresetCategories('B2B')" class="px-2 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 hover:bg-indigo-500/30 transition-all flex items-center gap-1">
+                                        <span>🏢 B2B Preset</span>
+                                    </button>
+                                    <button type="button" onclick="setPresetCategories('ALL')" class="px-2 py-0.5 rounded font-bold bg-slate-800 text-slate-300 hover:text-white border border-dark-border transition-all">
+                                        <span>🌐 All</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <textarea id="ctrl-categories" rows="3" class="w-full bg-dark-bg border border-dark-border rounded-lg p-2 text-xs text-white focus:ring-1 focus:ring-indigo-500 font-mono">salons, beauty clinics, dental clinics, medical clinics, restaurants, cafes, gyms, fitness studios, luxury jewellery shops, perfume boutiques, car garages, auto repair</textarea>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
@@ -472,48 +485,64 @@
                             </div>
                         </div>
 
-                        <div class="pt-2">
-                            <button type="button" onclick="startDiscovery()" class="w-full py-3 px-4 rounded-lg font-bold text-xs text-white bg-gradient-to-r from-indigo-600 via-indigo-500 to-purple-600 hover:from-indigo-500 hover:to-purple-500 shadow-lg glow-brand transition-all flex items-center justify-center gap-2">
-                                <span>🚀 LAUNCH PROSPECT DISCOVERY</span>
+                        <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <button type="button" onclick="setPresetCategories('B2C'); startDiscovery();" class="py-2.5 px-3 rounded-lg font-black text-xs text-white bg-gradient-to-r from-amber-600 via-orange-600 to-amber-700 hover:from-amber-500 hover:to-orange-500 shadow-lg transition-all flex items-center justify-center gap-1.5 transform active:scale-95">
+                                <span>🛍️ SCAN B2C PROSPECTS</span>
+                            </button>
+                            <button type="button" onclick="setPresetCategories('B2B'); startDiscovery();" class="py-2.5 px-3 rounded-lg font-black text-xs text-white bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-700 hover:from-indigo-500 hover:to-purple-500 shadow-lg transition-all flex items-center justify-center gap-1.5 transform active:scale-95">
+                                <span>🏢 SCAN B2B PROSPECTS</span>
                             </button>
                         </div>
+                        <button type="button" onclick="startDiscovery()" class="w-full py-2.5 px-4 rounded-lg font-bold text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 hover:text-white border border-dark-border transition-all flex items-center justify-center gap-2 mt-2">
+                            <span>🚀 SCAN CUSTOM CATEGORIES</span>
+                        </button>
                         <div id="discovery-status-msg" class="text-xs text-center font-medium p-2 rounded hidden"></div>
                     </form>
                 </div>
 
                 <!-- Stats & Insights Column -->
                 <div class="lg:col-span-2 space-y-6">
-                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Target Prospects</div>
-                            <div class="mt-1 text-2xl font-black text-white" id="stat-total">0</div>
-                            <div class="text-[10px] text-emerald-400 mt-1">100% verified active leads</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <div class="bg-dark-card border border-dark-border p-3.5 rounded-xl shadow-lg">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Target Prospects</div>
+                            <div class="mt-1 text-xl font-black text-white" id="stat-total">0</div>
+                            <div class="text-[9px] text-emerald-400 mt-0.5">100% active leads</div>
                         </div>
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">No Website (Strict)</div>
-                            <div class="mt-1 text-2xl font-black text-rose-400" id="stat-no-website">0</div>
-                            <div class="text-[10px] text-slate-400 mt-1">Zero web presence</div>
+                        <div class="bg-dark-card border border-dark-border p-3.5 rounded-xl shadow-lg">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">No Website</div>
+                            <div class="mt-1 text-xl font-black text-rose-400" id="stat-no-website">0</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Zero web presence</div>
                         </div>
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">B2B Wholesalers</div>
-                            <div class="mt-1 text-2xl font-black text-indigo-400" id="stat-b2b">0</div>
-                            <div class="text-[10px] text-indigo-300 mt-1">High-ticket commercial</div>
+                        <div class="bg-dark-card border border-indigo-500/30 p-3.5 rounded-xl shadow-lg bg-indigo-950/20">
+                            <div class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">B2B Wholesalers</div>
+                            <div class="mt-1 text-xl font-black text-indigo-300" id="stat-b2b">0</div>
+                            <div class="text-[9px] text-indigo-300/80 mt-0.5">Commercial dealers</div>
                         </div>
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">HOT Leads (70+)</div>
-                            <div class="mt-1 text-2xl font-black text-amber-400" id="stat-hot">0</div>
-                            <div class="text-[10px] text-slate-400 mt-1">Highest converting</div>
+                        <div class="bg-dark-card border border-amber-500/30 p-3.5 rounded-xl shadow-lg bg-amber-950/20">
+                            <div class="text-[10px] font-bold text-amber-400 uppercase tracking-wider">B2C Retail & Services</div>
+                            <div class="mt-1 text-xl font-black text-amber-300" id="stat-b2c">0</div>
+                            <div class="text-[9px] text-amber-300/80 mt-0.5">Salons, clinics, dining</div>
                         </div>
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">CEOs Located</div>
-                            <div class="mt-1 text-2xl font-black text-purple-400" id="stat-ceos">0</div>
-                            <div class="text-[10px] text-purple-300 mt-1">Direct decision makers</div>
+                        <div class="bg-dark-card border border-dark-border p-3.5 rounded-xl shadow-lg">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">HOT Leads (70+)</div>
+                            <div class="mt-1 text-xl font-black text-amber-400" id="stat-hot">0</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Highest converting</div>
                         </div>
-                        <div class="bg-dark-card border border-dark-border p-4 rounded-xl shadow-lg">
-                            <div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Outreach Sent</div>
-                            <div class="mt-1 text-2xl font-black text-emerald-400" id="stat-contacted">0</div>
-                            <div class="text-[10px] text-slate-400 mt-1">Contacted via email/WA</div>
+                        <div class="bg-dark-card border border-dark-border p-3.5 rounded-xl shadow-lg">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">CEOs Located</div>
+                            <div class="mt-1 text-xl font-black text-purple-400" id="stat-ceos">0</div>
+                            <div class="text-[9px] text-purple-300 mt-0.5">Decision makers</div>
                         </div>
+                        <div class="bg-dark-card border border-dark-border p-3.5 rounded-xl shadow-lg">
+                            <div class="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Outreach Sent</div>
+                            <div class="mt-1 text-xl font-black text-emerald-400" id="stat-contacted">0</div>
+                            <div class="text-[9px] text-slate-400 mt-0.5">Contacted via email/WA</div>
+                        </div>
+                        <button type="button" onclick="reclassifyAllLeadsNow()" class="bg-slate-900 border border-indigo-500/40 hover:border-indigo-400 p-3.5 rounded-xl shadow-lg text-left transition-all group cursor-pointer flex flex-col justify-between">
+                            <div class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider group-hover:text-indigo-300">⚡ Re-Fix DB Types</div>
+                            <div class="text-xs font-black text-white mt-1">Auto-Detect B2C</div>
+                            <div class="text-[9px] text-indigo-300 mt-0.5 underline">Re-classify all DB leads</div>
+                        </button>
                     </div>
 
                     <!-- Pipeline & Architecture Explanation -->
@@ -1346,6 +1375,35 @@
             const ctrlCity = document.getElementById('ctrl-city');
             if (ctrlCity) ctrlCity.value = currentCity;
             loadLeads();
+        }
+
+        function setPresetCategories(type) {
+            const areaEl = document.getElementById('ctrl-categories');
+            if (!areaEl) return;
+            if (type === 'B2C') {
+                areaEl.value = 'salons, beauty clinics, dental clinics, medical clinics, restaurants, cafes, gyms, fitness studios, luxury jewellery shops, perfume boutiques, car garages, auto repair, boutiques, spa and massage centers, bakeries, cloud kitchens, juice bars, yoga studios, travel agencies';
+            } else if (type === 'B2B') {
+                areaEl.value = 'building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading, electrical suppliers wholesale, hardware tools wholesale, heavy machinery parts, commercial kitchen equipment, packaging materials wholesale, fmcg distributors wholesale';
+            } else {
+                areaEl.value = 'building materials wholesale, auto spare parts wholesale, industrial equipment suppliers, general trading, salons, dental clinics, restaurants, cafes, gyms, fitness studios, luxury jewellery shops, car garages, auto repair, electrical suppliers wholesale';
+            }
+        }
+
+        async function reclassifyAllLeadsNow() {
+            if (!confirm('Re-analyze and update all stored database records for B2C vs B2B classification?')) return;
+            try {
+                const res = await fetch(`${window.API_BASE}/leads/reclassify`, { method: 'POST' });
+                const data = await res.json();
+                if (res.ok) {
+                    alert(`✅ Re-classification complete!\nTotal records: ${data.total_records}\nUpdated: ${data.reclassified_updated}\nB2C Total: ${data.b2c_total}\nB2B Total: ${data.b2b_total}`);
+                    loadLeads();
+                    if (typeof loadDataVault === 'function') loadDataVault();
+                } else {
+                    alert(`Failed: ${data.detail || 'Error'}`);
+                }
+            } catch (err) {
+                alert(`Error: ${err.message}`);
+            }
         }
 
         async function autoLoadLocationAreas() {
