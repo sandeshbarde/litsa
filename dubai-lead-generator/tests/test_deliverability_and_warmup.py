@@ -42,6 +42,7 @@ def test_resend_primary_with_smtp_fallback():
 
         # 1. Resend configured and succeeds
         with patch.object(settings, "resend_api_key", "re_test_key_12345"), \
+             patch("socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 25))]), \
              patch("requests.post") as mock_post:
 
             mock_resp = MagicMock()
@@ -63,6 +64,7 @@ def test_resend_primary_with_smtp_fallback():
         with patch.object(settings, "resend_api_key", "re_test_key_12345"), \
              patch.object(settings, "smtp_username", "valid.sender@gmail.com"), \
              patch.object(settings, "smtp_password", "validapppassword"), \
+             patch("socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 25))]), \
              patch("requests.post", side_effect=Exception("API Timeout")), \
              patch("smtplib.SMTP") as mock_smtp:
 

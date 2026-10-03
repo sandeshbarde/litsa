@@ -443,6 +443,26 @@
                     </div>
 
                     <form id="discovery-form" class="space-y-4">
+                        <!-- Client Type Selector (B2C / B2B / ALL) -->
+                        <div class="bg-slate-900 border border-dark-border p-3 rounded-xl space-y-2">
+                            <div class="flex items-center justify-between">
+                                <label class="block text-xs font-bold text-white">🎯 Target Client Type</label>
+                                <span class="text-[10px] text-amber-300 font-extrabold" id="target-type-label">🛍️ Searching B2C Clients Only</span>
+                            </div>
+                            <div class="grid grid-cols-3 gap-1.5 p-1 bg-dark-bg border border-dark-border rounded-lg">
+                                <button type="button" onclick="selectTargetBusinessType('B2C')" id="target-btn-B2C" class="py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow">
+                                    <span>🛍️ B2C Only</span>
+                                </button>
+                                <button type="button" onclick="selectTargetBusinessType('B2B')" id="target-btn-B2B" class="py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 text-slate-400 hover:text-white">
+                                    <span>🏢 B2B Only</span>
+                                </button>
+                                <button type="button" onclick="selectTargetBusinessType('ALL')" id="target-btn-ALL" class="py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 text-slate-400 hover:text-white">
+                                    <span>🌐 Both</span>
+                                </button>
+                            </div>
+                            <input type="hidden" id="ctrl-business-type" value="B2C">
+                        </div>
+
                         <div>
                             <div class="flex items-center justify-between mb-1">
                                 <label class="block text-xs font-semibold text-slate-300">Target City / State / Country</label>
@@ -1406,6 +1426,45 @@
             }
         }
 
+        function selectTargetBusinessType(type) {
+            const hiddenInput = document.getElementById('ctrl-business-type');
+            if (hiddenInput) hiddenInput.value = type;
+
+            const btnB2C = document.getElementById('target-btn-B2C');
+            const btnB2B = document.getElementById('target-btn-B2B');
+            const btnALL = document.getElementById('target-btn-ALL');
+            const label = document.getElementById('target-type-label');
+
+            if (!btnB2C || !btnB2B || !btnALL) return;
+
+            btnB2C.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 text-slate-400 hover:text-white';
+            btnB2B.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 text-slate-400 hover:text-white';
+            btnALL.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 text-slate-400 hover:text-white';
+
+            if (type === 'B2C') {
+                btnB2C.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow';
+                if (label) {
+                    label.className = 'text-[10px] text-amber-300 font-extrabold';
+                    label.textContent = '🛍️ Searching B2C Clients Only';
+                }
+                setPresetCategories('B2C');
+            } else if (type === 'B2B') {
+                btnB2B.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow';
+                if (label) {
+                    label.className = 'text-[10px] text-indigo-300 font-extrabold';
+                    label.textContent = '🏢 Searching B2B Clients Only';
+                }
+                setPresetCategories('B2B');
+            } else {
+                btnALL.className = 'py-2 px-2 rounded-lg text-xs font-black transition-all flex items-center justify-center gap-1 bg-purple-500/20 text-purple-300 border border-purple-500/40 shadow';
+                if (label) {
+                    label.className = 'text-[10px] text-purple-300 font-extrabold';
+                    label.textContent = '🌐 Searching B2B + B2C Clients';
+                }
+                setPresetCategories('ALL');
+            }
+        }
+
         async function autoLoadLocationAreas() {
             const ctrlCity = document.getElementById('ctrl-city');
             const city = (ctrlCity ? ctrlCity.value : currentCity).trim();
@@ -2108,10 +2167,12 @@
             const areas = document.getElementById('ctrl-areas').value.split(',').map(s => s.trim()).filter(Boolean);
             const categories = document.getElementById('ctrl-categories').value.split(',').map(s => s.trim()).filter(Boolean);
             const maxLeads = parseInt(document.getElementById('ctrl-max-leads').value) || 50;
+            const businessTypeEl = document.getElementById('ctrl-business-type');
+            const businessType = businessTypeEl ? businessTypeEl.value : 'ALL';
 
             const msgEl = document.getElementById('discovery-status-msg');
             msgEl.className = 'text-xs text-center font-medium p-2 rounded bg-indigo-900/30 text-indigo-300 block';
-            msgEl.textContent = `🚀 Starting search job for ${city}... Strict No-Website Filter active!`;
+            msgEl.textContent = `🚀 Starting search job for ${city} (${businessType})... Strict No-Website Filter active!`;
 
             try {
                 const res = await fetch(`${window.API_BASE}/jobs/start`, {
@@ -2121,7 +2182,8 @@
                         city: city,
                         areas: areas,
                         categories: categories,
-                        max_businesses: maxLeads
+                        max_businesses: maxLeads,
+                        business_type: businessType
                     })
                 });
                 const data = await res.json();

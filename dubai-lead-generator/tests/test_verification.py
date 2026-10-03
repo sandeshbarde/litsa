@@ -55,7 +55,8 @@ def test_verify_working_website():
     mock_response.status_code = 200
     mock_response.url = "https://example.com"
 
-    with patch.object(svc._session, "head", return_value=mock_response):
+    with patch("app.services.verification.validate_url_for_ssrf", return_value=(True, "OK", "93.184.216.34")), \
+         patch("app.services.verification.safe_request", return_value=(True, mock_response, "")):
         with patch("app.config.settings") as mock_settings:
             mock_settings.enable_web_verification = True
             mock_settings.max_web_verification_calls = 100

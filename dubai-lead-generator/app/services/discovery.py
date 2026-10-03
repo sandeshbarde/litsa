@@ -133,9 +133,10 @@ class DiscoveryService:
         max_businesses: Optional[int] = None,
         city: str = "Dubai",
         country: str = "United Arab Emirates",
+        business_type: str = "ALL",
     ) -> Dict[str, Any]:
         """
-        Execute a full discovery run.
+        Execute a full discovery run with target business_type filtering (ALL, B2B, or B2C).
         Returns a summary dict.
         """
         max_businesses = max_businesses or settings.max_total_businesses_per_run
@@ -171,6 +172,7 @@ class DiscoveryService:
                     job_id=job.id,
                     q_info=q_info,
                     max_businesses=max_businesses - total_new,
+                    target_business_type=business_type,
                 )
                 total_found += results["found"]
                 total_new += results["new"]
@@ -212,6 +214,7 @@ class DiscoveryService:
         job_id: str,
         q_info: Dict[str, str],
         max_businesses: int,
+        target_business_type: str = "ALL",
     ) -> Dict[str, int]:
         """Execute a single area × category query and process results."""
         area = q_info["area"]
@@ -220,7 +223,7 @@ class DiscoveryService:
         city = q_info.get("city", "Dubai")
         country = q_info.get("country", "United Arab Emirates")
 
-        logger.info(f"[{job_id}] Searching: '{query}' ({city}, {country})")
+        logger.info(f"[{job_id}] Searching: '{query}' ({city}, {country}) [Target Type: {target_business_type}]")
 
         loc_meta = get_location_meta(city, fallback_country=country)
         raw_businesses, telemetry = discovery_engine.search_with_failover(
@@ -248,7 +251,7 @@ class DiscoveryService:
             if new_count >= max_businesses:
                 break
 
-            biz = self._process_business(raw, area, category, city=city, country=country)
+            biz = self._process_business(raw, area, category, city=city, country=country, target_business_type=target_business_type)
             if biz is None:
                 dup_count += 1
             else:
@@ -257,7 +260,7 @@ class DiscoveryService:
         return {"found": found, "new": new_count, "duplicates": dup_count}
 
     def _process_business(
-        self, raw: dict, area: str, category: str, city: str = "Dubai", country: str = "United Arab Emirates"
+        self, raw: dict, area: str, category: str, city: str = "Dubai", country: str = "United Arab Emirates", target_business_type: str = "ALL"
     ):
         """Process a single raw business result through the full pipeline."""
         name = raw.get("business_name") or raw.get("title") or raw.get("name")
@@ -344,6 +347,14 @@ class DiscoveryService:
             review_count=int(review_count) if review_count else None,
             description=raw.get("description"),
         )
+
+        classified_type = loophole_info.get("business_type", "B2B")
+        if target_business_type and target_business_type.upper() == "B2C" and classified_type != "B2C":
+            logger.info(f"[STAGE 3: B2C FILTER] Skipping '{name}' because search target is B2C only and business is classified as B2B.")
+            return None
+        elif target_business_type and target_business_type.upper() == "B2B" and classified_type != "B2B":
+            logger.info(f"[STAGE 3: B2B FILTER] Skipping '{name}' because search target is B2B only and business is classified as B2C.")
+            return None
 
         # Optional Gemini classification
         website_quality = None

@@ -29,6 +29,7 @@ class StartJobRequest(BaseModel):
     country: Optional[str] = "United Arab Emirates"
     max_businesses: Optional[int] = None
     min_lead_score: Optional[int] = None
+    business_type: Optional[str] = "ALL"  # ALL, B2B, B2C
 
 
 def _run_discovery(run_id: str, request: StartJobRequest, db: Session):
@@ -42,6 +43,7 @@ def _run_discovery(run_id: str, request: StartJobRequest, db: Session):
             city=request.city or "Dubai",
             country=request.country or "United Arab Emirates",
             max_businesses=request.max_businesses,
+            business_type=request.business_type or "ALL",
         )
         _ACTIVE_RUNS[run_id] = {"status": "completed", "result": result}
     except Exception as exc:

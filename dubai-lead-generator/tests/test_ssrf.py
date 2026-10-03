@@ -33,10 +33,12 @@ def test_ssrf_blocks_private_urls():
 
 
 def test_ssrf_allows_public_urls():
+    from unittest.mock import patch
     public_urls = [
         "https://www.google.com",
         "https://example.com",
     ]
-    for url in public_urls:
-        safe, reason, _ = validate_url_for_ssrf(url)
-        assert safe is True, f"Legitimate public URL {url} was blocked: {reason}"
+    with patch("socket.getaddrinfo", return_value=[(2, 1, 6, "", ("93.184.216.34", 80))]):
+        for url in public_urls:
+            safe, reason, _ = validate_url_for_ssrf(url)
+            assert safe is True, f"Legitimate public URL {url} was blocked: {reason}"
